@@ -66,7 +66,7 @@ A comprehensive stock analysis web application built with Flask that provides re
 
 ### Step 1: Clone the Repository
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/pavansydney/MoneySavyy.git)
 cd money_savyy_website
 ```
 
