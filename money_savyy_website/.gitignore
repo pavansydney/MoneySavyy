@@ -1,0 +1,343 @@
+# Money Savyy - .gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Money Savyy Specific Files
+
+# Cache directory and files
+cache/
+*.pkl
+*.pickle
+
+# Stock data cache
+stock_cache/
+data_cache/
+
+# Log files
+*.log
+logs/
+error.log
+debug.log
+app.log
+
+# Environment and configuration files
+.env
+.env.local
+.env.development
+.env.production
+config.ini
+settings.ini
+
+# API keys and secrets (NEVER commit these!)
+api_keys.py
+secrets.py
+credentials.json
+.secrets/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+database/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# OS generated files
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Editor specific files
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Development and testing files
+test_results/
+coverage_html/
+.coverage.*
+.pytest_cache/
+test_cache/
+
+# Backup files
+*.bak
+*.backup
+backup/
+backups/
+
+# Documentation builds
+docs/build/
+docs/_build/
+
+# Static file collections (if using Flask-Assets)
+.webassets-cache/
+static/gen/
+
+# Flask session files
+flask_session/
+
+# Deployment files (may contain sensitive info)
+docker-compose.override.yml
+.dockerignore
+Dockerfile.dev
+
+# Package manager files
+package-lock.json
+yarn.lock
+
+# Node modules (if using any Node.js tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Monitoring and analytics
+.monitoring/
+analytics/
+
+# CI/CD files that might contain secrets
+.github/workflows/*.yml
+.gitlab-ci.yml
+.travis.yml
+circle.yml
+
+# Local development overrides
+local_config.py
+dev_settings.py
+
+# Chart and image exports
+charts/
+exports/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.pdf
+
+# Financial data exports
+*.csv
+*.xlsx
+*.xls
+data_exports/
+
+# Machine learning models
+models/
+*.model
+*.joblib
+*.h5
+
+# Jupyter notebooks with outputs
+*-checkpoint.ipynb
+
+# Local storage
+localStorage/
+sessionStorage/
+
+# Performance monitoring
+.profiling/
+performance/
+
+# Custom ignores for Money Savyy
+stock_logos/
+company_data/
+market_data/
+historical_data/
+
+# Ignore any personal notes or documentation
+NOTES.md
+TODO.md
+personal/
+private/
+
+# Ignore compiled assets if any
+dist/
+build/
+
+# Ignore any uploaded files
+uploads/
+user_data/
+
+# End of .gitignore

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Savyy - Save Smart Dream Big</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-chart-line me-2"></i>
+                Money Savyy
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analysis">Analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#news">News</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="dashboard">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="display-4 fw-bold text-white mb-4">
+                            Money Savyy
+                            <span class="text-warning">💰</span>
+                        </h1>
+                        <p class="lead text-white mb-4">Save Smart Dream Big</p>
+                        <p class="text-white-50 mb-5">
+                            Advanced AI-powered stock analysis with real-time predictions, 
+                            sentiment analysis, and intelligent trading recommendations.
+                        </p>
+                        
+                        <!-- Stock Search -->
+                        <div class="search-container">
+                            <div class="input-group input-group-lg">
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="stockSearch" 
+                                       placeholder="Search stocks (e.g., TCS, Reliance, Infosys...)">
+                                <button class="btn btn-warning" type="button" id="searchBtn">
+                                    <i class="fas fa-search"></i> Analyze
+                                </button>
+                            </div>
+                            <div id="searchSuggestions" class="suggestions-dropdown"></div>
+                        </div>
+                        
+                        <!-- Popular Stocks -->
+                        <div class="popular-stocks mt-4">
+                            <p class="text-white mb-2">Popular Stocks:</p>
+                            <div id="popularStocks" class="d-flex flex-wrap gap-2">
+                                <!-- Popular stocks will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image text-center">
+                        <div class="feature-cards">
+                            <div class="feature-card">
+                                <i class="fas fa-robot fa-2x text-warning mb-3"></i>
+                                <h5 class="text-white">AI Predictions</h5>
+                                <p class="text-white-50">Machine learning powered price forecasting</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-newspaper fa-2x text-info mb-3"></i>
+                                <h5 class="text-white">Real-time News</h5>
+                                <p class="text-white-50">Latest news with sentiment analysis</p>
+                            </div>
+                            <div class="feature-card">
+                                <i class="fas fa-chart-bar fa-2x text-success mb-3"></i>
+                                <h5 class="text-white">Smart Analysis</h5>
+                                <p class="text-white-50">BUY/SELL/HOLD recommendations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Section -->
+    <section class="analysis-section py-3" id="analysis" style="min-height: auto;">
+        <div class="container">
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="text-center d-none py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Analyzing stock data...</p>
+            </div>
+
+            <!-- Analysis Results -->
+            <div id="analysisResults" class="d-none">
+                <!-- Stock Header -->
+                <div class="stock-header mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div id="stockInfo" class="d-flex align-items-center">
+                                <img id="stockLogo" src="" alt="Company Logo" class="company-logo-large me-3" style="display: none;" 
+                                     onerror="this.style.display='none'" />
+                                <div>
+                                    <h2 id="stockName" class="mb-1">Select a stock to analyze</h2>
+                                    <p id="stockSymbol" class="text-muted mb-0"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div id="recommendation" class="recommendation-badge">
+                                <!-- Recommendation will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Price Info -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card price-card">
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-2">
+                                        <div class="price-item">
+                                            <h3 id="currentPrice" class="fw-bold text-primary mb-1">₹0.00</h3>
+                                            <small class="text-muted">Current Price</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="price-item">
+                                            <h5 id="priceChange" class="mb-1">₹0.00</h5>
+                                            <small class="text-muted">Change</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="price-item">
+                                            <h5 id="openPrice" class="mb-1">₹0.00</h5>
+                                            <small class="text-muted">Open</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="price-item">
+                                            <h5 id="highPrice" class="mb-1">₹0.00</h5>
+                                            <small class="text-muted">High</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="price-item">
+                                            <h5 id="lowPrice" class="mb-1">₹0.00</h5>
+                                            <small class="text-muted">Low</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="price-item">
+                                            <h5 id="volume" class="mb-1">0</h5>
+                                            <small class="text-muted">Volume</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Analysis Tabs -->
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="analysisTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="chart-tab" data-bs-toggle="tab" data-bs-target="#chart" type="button">
+                                    <i class="fas fa-chart-line me-2"></i>Technical Chart
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#prediction" type="button">
+                                    <i class="fas fa-robot me-2"></i>AI Prediction
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="news-tab" data-bs-toggle="tab" data-bs-target="#news" type="button">
+                                    <i class="fas fa-newspaper me-2"></i>News & Sentiment
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="fundamentals-tab" data-bs-toggle="tab" data-bs-target="#fundamentals" type="button">
+                                    <i class="fas fa-calculator me-2"></i>Fundamentals
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="analysisTabContent">
+                            <!-- Technical Chart Tab -->
+                            <div class="tab-pane fade show active" id="chart" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div id="stockChart" style="height: 600px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI Prediction Tab -->
+                            <div class="tab-pane fade" id="prediction" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-robot text-primary me-2"></i>
+                                            AI Price Prediction (30 Days)
+                                        </h5>
+                                        <div id="predictionContent">
+                                            <!-- Prediction content will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- News Tab -->
+                            <div class="tab-pane fade" id="news" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-newspaper text-info me-2"></i>
+                                            Latest News & Sentiment Analysis
+                                        </h5>
+                                        <div id="newsContent">
+                                            <!-- News content will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fundamentals Tab -->
+                            <div class="tab-pane fade" id="fundamentals" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-calculator text-success me-2"></i>
+                                            Fundamental Analysis
+                                        </h5>
+                                        <div id="fundamentalsContent">
+                                            <!-- Fundamentals content will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="alert alert-danger d-none" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="errorText"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section py-4 bg-light" id="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="fw-bold mb-4">About Money Savyy</h2>
+                    <p class="lead mb-4">
+                        Money Savyy is an advanced AI-powered stock analysis platform that helps you make 
+                        informed investment decisions. Our cutting-edge technology combines machine learning, 
+                        sentiment analysis, and technical indicators to provide comprehensive stock insights.
+                    </p>
+                    <div class="row mt-5">
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-item">
+                                <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                                <h5>AI-Powered Analysis</h5>
+                                <p>Advanced machine learning algorithms for accurate price predictions</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                                <h5>Risk Assessment</h5>
+                                <p>Comprehensive risk analysis and trading recommendations</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-item">
+                                <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                                <h5>Real-time Data</h5>
+                                <p>Live stock prices, news, and market sentiment analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h5 class="mb-2 text-white">Money Savyy</h5>
+                    <p class="text-light mb-2">Save Smart Dream Big</p>
+                    <small class="text-light">
+                        © 2025 Money Savyy. All rights reserved. | Advanced Stock Analysis Platform
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
