@@ -16,7 +16,7 @@ import json
 from datetime import datetime, timedelta
 import warnings
 from difflib import get_close_matches
-import ta
+# import ta  # Removed for deployment compatibility
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score
@@ -32,6 +32,31 @@ import pickle
 import os
 
 warnings.filterwarnings('ignore')
+
+# Simple Technical Analysis Functions (replacing ta library for deployment)
+def calculate_rsi(prices, window=14):
+    """Calculate RSI (Relative Strength Index)"""
+    try:
+        delta = prices.diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        return rsi
+    except:
+        return pd.Series([50] * len(prices), index=prices.index)
+
+def calculate_macd(prices, fast=12, slow=26, signal=9):
+    """Calculate MACD (Moving Average Convergence Divergence)"""
+    try:
+        ema_fast = prices.ewm(span=fast).mean()
+        ema_slow = prices.ewm(span=slow).mean()
+        macd_line = ema_fast - ema_slow
+        signal_line = macd_line.ewm(span=signal).mean()
+        macd_diff = macd_line - signal_line
+        return macd_diff
+    except:
+        return pd.Series([0] * len(prices), index=prices.index)
 
 # Mock Stock class for NSE data compatibility
 class MockStock:
@@ -1161,8 +1186,8 @@ def create_plotly_chart(stock_data, prediction_info, symbol):
         # Calculate technical indicators
         stock_data['SMA_20'] = stock_data['Close'].rolling(window=20).mean()
         stock_data['SMA_50'] = stock_data['Close'].rolling(window=50).mean()
-        stock_data['RSI'] = ta.momentum.rsi(stock_data['Close'], window=14)
-        stock_data['MACD'] = ta.trend.macd_diff(stock_data['Close'])
+        stock_data['RSI'] = calculate_rsi(stock_data['Close'], window=14)
+        stock_data['MACD'] = calculate_macd(stock_data['Close'])
         
         # Create subplots
         from plotly.subplots import make_subplots
@@ -1346,15 +1371,14 @@ def analyze_stock_api(stock_query):
             # Calculate technical indicators for minimal data
             try:
                 if hist_data is not None and not hist_data.empty and len(hist_data) >= 14:
-                    rsi = float(ta.momentum.rsi(hist_data['Close'], window=14).iloc[-1])
-                    macd_line = ta.trend.MACD(hist_data['Close']).macd()
-                    macd = float(macd_line.iloc[-1]) if not macd_line.empty else 0.0
+                    rsi_series = calculate_rsi(hist_data['Close'], window=14)
+                    rsi = float(rsi_series.iloc[-1]) if not rsi_series.empty else 50.0
+                    macd_series = calculate_macd(hist_data['Close'])
+                    macd = float(macd_series.iloc[-1]) if not macd_series.empty else 0.0
                 else:
                     print("Insufficient data for technical indicators, using defaults")
             except Exception as e:
-                print(f"Error calculating technical indicators: {e}")
-            
-            # Generate chart and recommendation
+                print(f"Error calculating technical indicators: {e}")            # Generate chart and recommendation
             try:
                 chart_json = create_plotly_chart(hist_data, {'error': 'Prediction unavailable'}, symbol)
                 prediction_info = {'error': 'Prediction unavailable in minimal mode'}
@@ -1383,9 +1407,10 @@ def analyze_stock_api(stock_query):
             # Calculate technical indicators for full data
             try:
                 if len(hist_data) >= 14:
-                    rsi = float(ta.momentum.rsi(hist_data['Close'], window=14).iloc[-1])
-                    macd_line = ta.trend.MACD(hist_data['Close']).macd()
-                    macd = float(macd_line.iloc[-1]) if not macd_line.empty else 0.0
+                    rsi_series = calculate_rsi(hist_data['Close'], window=14)
+                    rsi = float(rsi_series.iloc[-1]) if not rsi_series.empty else 50.0
+                    macd_series = calculate_macd(hist_data['Close'])
+                    macd = float(macd_series.iloc[-1]) if not macd_series.empty else 0.0
                 else:
                     print("Insufficient data for technical indicators, using defaults")
             except Exception as e:
