@@ -1286,8 +1286,204 @@ def create_plotly_chart(stock_data, prediction_info, symbol):
 
 @app.route('/')
 def index():
-    """Main dashboard page"""
+    """Landing page with dual options"""
+    return render_template('landing.html')
+
+@app.route('/stock-analysis')
+def stock_analysis():
+    """Stock analysis dashboard"""
     return render_template('index.html')
+
+@app.route('/financial-advisor')
+def financial_advisor():
+    """Financial advisor page"""
+    return render_template('financial-advisor.html')
+
+@app.route('/api/analyze-finances', methods=['POST'])
+def analyze_finances():
+    """API endpoint for financial analysis"""
+    try:
+        data = request.get_json()
+        
+        # Extract financial data
+        name = data.get('name', '')
+        age = int(data.get('age', 25))
+        city = data.get('city', '')
+        family_members = int(data.get('familyMembers', 1))
+        salary = int(data.get('salary', 0))
+        other_income = int(data.get('otherIncome', 0))
+        expenses = int(data.get('expenses', 0))
+        home_loan_emi = int(data.get('homeLoanEmi', 0))
+        car_loan_emi = int(data.get('carLoanEmi', 0))
+        other_emis = int(data.get('otherEmis', 0))
+        credit_card_debt = int(data.get('creditCardDebt', 0))
+        current_sip = int(data.get('currentSip', 0))
+        emergency_fund = int(data.get('emergencyFund', 0))
+        has_term_insurance = data.get('hasTermInsurance', False)
+        has_health_insurance = data.get('hasHealthInsurance', False)
+        has_life_insurance = data.get('hasLifeInsurance', False)
+        
+        # Calculate financial metrics
+        total_income = salary + other_income
+        total_emis = home_loan_emi + car_loan_emi + other_emis
+        total_expenses = expenses + total_emis
+        savings_amount = total_income - total_expenses
+        
+        # Financial ratios
+        savings_rate = (savings_amount / total_income) * 100 if total_income > 0 else 0
+        debt_ratio = (total_emis / total_income) * 100 if total_income > 0 else 0
+        emergency_months = emergency_fund / expenses if expenses > 0 else 0
+        investment_rate = (current_sip / total_income) * 100 if total_income > 0 else 0
+        
+        # Calculate financial score (0-100)
+        score = 0
+        
+        # Savings rate (30 points)
+        if savings_rate >= 20:
+            score += 30
+        elif savings_rate >= 15:
+            score += 25
+        elif savings_rate >= 10:
+            score += 20
+        elif savings_rate >= 5:
+            score += 15
+        else:
+            score += 10
+        
+        # Debt ratio (25 points)
+        if debt_ratio <= 30:
+            score += 25
+        elif debt_ratio <= 40:
+            score += 20
+        elif debt_ratio <= 50:
+            score += 15
+        else:
+            score += 10
+        
+        # Emergency fund (20 points)
+        if emergency_months >= 6:
+            score += 20
+        elif emergency_months >= 3:
+            score += 15
+        elif emergency_months >= 1:
+            score += 10
+        else:
+            score += 5
+        
+        # Insurance coverage (15 points)
+        insurance_score = 0
+        if has_term_insurance:
+            insurance_score += 5
+        if has_health_insurance:
+            insurance_score += 5
+        if has_life_insurance:
+            insurance_score += 5
+        score += insurance_score
+        
+        # Investment rate (10 points)
+        if investment_rate >= 15:
+            score += 10
+        elif investment_rate >= 10:
+            score += 8
+        elif investment_rate >= 5:
+            score += 6
+        else:
+            score += 3
+        
+        # Generate recommendations
+        recommendations = []
+        
+        # 50-30-20 rule analysis
+        ideal_needs = total_income * 0.5
+        ideal_wants = total_income * 0.3
+        ideal_savings = total_income * 0.2
+        
+        # Budget recommendations
+        if savings_amount < ideal_savings:
+            recommendations.append({
+                'type': 'budget',
+                'title': 'Improve Your Savings Rate',
+                'content': f'Your current savings rate is {savings_rate:.1f}%. Aim for at least 20% savings rate.',
+                'action': f'Try to save an additional ₹{int(ideal_savings - savings_amount):,} monthly.'
+            })
+        
+        # Debt management
+        if debt_ratio > 40:
+            recommendations.append({
+                'type': 'debt',
+                'title': 'Reduce Debt Burden',
+                'content': f'Your EMI-to-income ratio is {debt_ratio:.1f}%, which is higher than recommended 40%.',
+                'action': 'Consider debt consolidation or prepaying high-interest loans.'
+            })
+        
+        # Emergency fund
+        if emergency_months < 6:
+            needed_amount = (6 * expenses) - emergency_fund
+            recommendations.append({
+                'type': 'budget',
+                'title': 'Build Emergency Fund',
+                'content': f'You have {emergency_months:.1f} months of expenses saved. Aim for 6 months.',
+                'action': f'Save ₹{int(needed_amount/12):,} monthly for 12 months to reach your goal.'
+            })
+        
+        # Insurance recommendations
+        if not has_term_insurance:
+            term_cover = total_income * 10  # 10x annual income
+            recommendations.append({
+                'type': 'insurance',
+                'title': 'Get Term Insurance',
+                'content': f'Get term life insurance coverage of ₹{term_cover/10000000:.1f} crores.',
+                'action': f'Premium: Approximately ₹{int(term_cover * 0.0005/12):,} per month.'
+            })
+        
+        if not has_health_insurance:
+            health_cover = family_members * 500000
+            recommendations.append({
+                'type': 'insurance',
+                'title': 'Get Health Insurance',
+                'content': f'Get family health insurance of ₹{health_cover/100000:.0f} lakhs.',
+                'action': f'Premium: Approximately ₹{int(health_cover * 0.03/12):,} per month.'
+            })
+        
+        # Investment recommendations
+        if current_sip < total_income * 0.15:
+            recommended_sip = total_income * 0.15
+            recommendations.append({
+                'type': 'investment',
+                'title': 'Increase SIP Investments',
+                'content': f'Increase your SIP to ₹{int(recommended_sip):,} (15% of income).',
+                'action': 'Start with equity mutual funds for long-term wealth creation.'
+            })
+        
+        return jsonify({
+            'success': True,
+            'analysis': {
+                'score': round(score),
+                'savings_rate': round(savings_rate, 1),
+                'debt_ratio': round(debt_ratio, 1),
+                'emergency_months': round(emergency_months, 1),
+                'investment_rate': round(investment_rate, 1),
+                'monthly_savings': savings_amount,
+                'total_income': total_income,
+                'total_expenses': total_expenses
+            },
+            'rule_502030': {
+                'ideal_needs': int(ideal_needs),
+                'ideal_wants': int(ideal_wants),
+                'ideal_savings': int(ideal_savings),
+                'actual_needs': min(int(total_expenses), int(ideal_needs)),
+                'actual_wants': max(0, int(total_expenses) - int(ideal_needs)),
+                'actual_savings': int(savings_amount)
+            },
+            'recommendations': recommendations
+        })
+        
+    except Exception as e:
+        print(f"❌ Financial analysis error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to analyze financial data'
+        }), 500
 
 @app.route('/api/search/<query>')
 def search_stocks(query):

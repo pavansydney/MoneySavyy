@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Savyy - Save Smart Dream Big</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            z-index: 2;
+            position: relative;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 3rem;
+        }
+        
+        .cta-button {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+        
+        .btn-stock {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: 2px solid transparent;
+        }
+        
+        .btn-financial {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+            border: 2px solid transparent;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape:nth-child(1) { width: 100px; height: 100px; top: 20%; left: 10%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 150px; height: 150px; top: 60%; left: 80%; animation-delay: 2s; }
+        .shape:nth-child(3) { width: 80px; height: 80px; top: 80%; left: 20%; animation-delay: 4s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .stats-section {
+            background: #f8f9fa;
+            padding: 5rem 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">Money Savyy</h1>
+                    <p class="hero-subtitle">Save Smart, Dream Big</p>
+                    <p class="text-white fs-5 mb-4">
+                        Your comprehensive financial companion for stock analysis and personal financial planning.
+                        Take control of your finances and build wealth intelligently.
+                    </p>
+                    
+                    <div class="d-flex flex-wrap gap-3 justify-content-start">
+                        <a href="/stock-analysis" class="cta-button btn-stock">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Stock Analysis
+                        </a>
+                        <a href="/financial-advisor" class="cta-button btn-financial">
+                            <i class="fas fa-piggy-bank me-2"></i>
+                            Financial Advisor
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h4 class="text-white mb-3">Stock Analysis</h4>
+                                <p class="text-white-50">
+                                    Advanced technical analysis, real-time data, and AI-powered predictions for smart investing.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <h4 class="text-white mb-3">Financial Planning</h4>
+                                <p class="text-white-50">
+                                    Personal budget analysis, debt management, and wealth building strategies.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h4 class="text-white mb-3">Insurance Guide</h4>
+                                <p class="text-white-50">
+                                    Personalized insurance recommendations for complete financial protection.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <div class="feature-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <h4 class="text-white mb-3">Investment SIPs</h4>
+                                <p class="text-white-50">
+                                    Smart SIP recommendations and portfolio optimization for long-term wealth.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Users Helped</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">₹50Cr+</div>
+                        <div class="stat-label">Wealth Created</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-12">
+                    <h2 class="display-4 fw-bold text-primary">Why Choose Money Savyy?</h2>
+                    <p class="lead text-muted">Comprehensive financial solutions for every Indian family</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">AI-Powered Insights</h5>
+                            <p class="card-text">Advanced algorithms analyze market trends and your personal finances to provide actionable insights.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-flag-india fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Made for India</h5>
+                            <p class="card-text">Tailored for Indian markets, tax laws, and financial products with INR-focused planning.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-lock fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Secure & Private</h5>
+                            <p class="card-text">Your financial data is encrypted and never shared. Complete privacy guaranteed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Money Savyy</h5>
+                    <p class="mb-0">Save Smart, Dream Big</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2025 Money Savyy. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Advisor - Money Savyy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .financial-header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 3rem 0;
+        }
+        
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        .step-indicator {
+            background: #e9ecef;
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .step-progress {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .advice-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid;
+        }
+        
+        .advice-card.budget { border-left-color: #28a745; }
+        .advice-card.debt { border-left-color: #dc3545; }
+        .advice-card.insurance { border-left-color: #007bff; }
+        .advice-card.investment { border-left-color: #ffc107; }
+        
+        .financial-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .nav-pills .nav-link {
+            border-radius: 25px;
+            margin: 0 0.5rem;
+        }
+        
+        .nav-pills .nav-link.active {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Header -->
+    <div class="financial-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-piggy-bank me-3"></i>Personal Financial Advisor</h1>
+                    <p class="lead mb-0">Get personalized financial advice based on the 50-30-20 rule and expert recommendations</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/" class="btn btn-outline-light">
+                        <i class="fas fa-home me-2"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills justify-content-center mb-5" id="advisorTabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="input-tab" data-bs-toggle="pill" href="#input-section">
+                    <i class="fas fa-edit me-2"></i>Your Details
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="analysis-tab" data-bs-toggle="pill" href="#analysis-section">
+                    <i class="fas fa-chart-pie me-2"></i>Analysis
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="sip-calculator-tab" data-bs-toggle="pill" href="#sip-calculator-section">
+                    <i class="fas fa-calculator me-2"></i>SIP Calculator
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="recommendations-tab" data-bs-toggle="pill" href="#recommendations-section">
+                    <i class="fas fa-lightbulb me-2"></i>Recommendations
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Input Section -->
+            <div class="tab-pane fade show active" id="input-section">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card shadow-lg border-0">
+                            <div class="card-header bg-gradient text-white text-center" style="background: linear-gradient(45deg, #f093fb, #f5576c);">
+                                <h4><i class="fas fa-user-circle me-2"></i>Tell Us About Your Finances</h4>
+                            </div>
+                            <div class="card-body">
+                                <!-- Progress Indicator -->
+                                <div class="step-indicator mb-4">
+                                    <div class="step-progress" id="progressBar" style="width: 25%"></div>
+                                </div>
+                                
+                                <form id="financialForm">
+                                    <!-- Step 1: Basic Info -->
+                                    <div class="form-step active" id="step1">
+                                        <h5 class="text-center mb-4">
+                                            <i class="fas fa-user me-2 text-primary"></i>Basic Information
+                                        </h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control modern-input" id="name" placeholder="Enter your full name" required>
+                                                            <label for="name">Full Name</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-birthday-cake"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="age" min="18" max="100" placeholder="Your age" required>
+                                                            <label for="age">Age</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-map-marker-alt"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="text" class="form-control modern-input" id="city" placeholder="Your city" required>
+                                                            <label for="city">City</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-users"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="familyMembers" min="1" placeholder="Number of family members" required>
+                                                            <label for="familyMembers">Family Members</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 2: Income Details -->
+                                    <div class="form-step" id="step2">
+                                        <h5 class="text-center mb-4">
+                                            <i class="fas fa-wallet me-2 text-success"></i>Income Details
+                                        </h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-money-bill-wave"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="salary" placeholder="₹50,000" required>
+                                                            <label for="salary">Monthly Salary (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-coins"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="otherIncome" value="0" placeholder="₹10,000">
+                                                            <label for="otherIncome">Other Income (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-briefcase"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <select class="form-select modern-input" id="incomeSource" required>
+                                                                <option value="">Choose your income source...</option>
+                                                                <option value="salaried">💼 Salaried Employee</option>
+                                                                <option value="business">🏢 Business Owner</option>
+                                                                <option value="freelance">💻 Freelancer</option>
+                                                                <option value="mixed">🔄 Mixed Sources</option>
+                                                            </select>
+                                                            <label for="incomeSource">Income Source</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 3: Expenses & EMIs -->
+                                    <div class="form-step" id="step3">
+                                        <h5 class="text-center mb-4">
+                                            <i class="fas fa-credit-card me-2 text-warning"></i>Expenses & EMIs
+                                        </h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-shopping-cart"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="expenses" placeholder="₹30,000" required>
+                                                            <label for="expenses">Monthly Expenses (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-home"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="homeLoanEmi" value="0" placeholder="₹20,000">
+                                                            <label for="homeLoanEmi">Home Loan EMI (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-car"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="carLoanEmi" value="0" placeholder="₹15,000">
+                                                            <label for="carLoanEmi">Car Loan EMI (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-file-invoice-dollar"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="otherEmis" value="0" placeholder="₹5,000">
+                                                            <label for="otherEmis">Other EMIs (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-credit-card"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="creditCardDebt" value="0" placeholder="₹25,000">
+                                                            <label for="creditCardDebt">Credit Card Outstanding (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 4: Current Investments -->
+                                    <div class="form-step" id="step4">
+                                        <h5 class="text-center mb-4">
+                                            <i class="fas fa-chart-line me-2 text-info"></i>Current Investments & Insurance
+                                        </h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-chart-line"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="currentSip" value="0" placeholder="₹10,000">
+                                                            <label for="currentSip">Current SIP Amount (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="input-group-modern">
+                                                        <div class="input-icon">
+                                                            <i class="fas fa-umbrella"></i>
+                                                        </div>
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control modern-input" id="emergencyFund" value="0" placeholder="₹100,000">
+                                                            <label for="emergencyFund">Emergency Fund (₹)</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Insurance Section with Modern Checkboxes -->
+                                            <div class="col-12">
+                                                <div class="mb-4">
+                                                    <h6 class="mb-3 text-muted">
+                                                        <i class="fas fa-shield-alt me-2"></i>Insurance Coverage
+                                                    </h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="modern-checkbox">
+                                                                <input class="modern-check-input" type="checkbox" id="hasTermInsurance">
+                                                                <label class="modern-check-label" for="hasTermInsurance">
+                                                                    <div class="check-icon">
+                                                                        <i class="fas fa-user-shield"></i>
+                                                                    </div>
+                                                                    <div class="check-content">
+                                                                        <strong>Term Insurance</strong>
+                                                                        <span>Life protection for family</span>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="modern-checkbox">
+                                                                <input class="modern-check-input" type="checkbox" id="hasHealthInsurance">
+                                                                <label class="modern-check-label" for="hasHealthInsurance">
+                                                                    <div class="check-icon">
+                                                                        <i class="fas fa-heartbeat"></i>
+                                                                    </div>
+                                                                    <div class="check-content">
+                                                                        <strong>Health Insurance</strong>
+                                                                        <span>Medical expense coverage</span>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="modern-checkbox">
+                                                                <input class="modern-check-input" type="checkbox" id="hasLifeInsurance">
+                                                                <label class="modern-check-label" for="hasLifeInsurance">
+                                                                    <div class="check-icon">
+                                                                        <i class="fas fa-hand-holding-heart"></i>
+                                                                    </div>
+                                                                    <div class="check-content">
+                                                                        <strong>Life Insurance</strong>
+                                                                        <span>Investment + protection</span>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Navigation Buttons -->
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="button" class="btn btn-outline-primary modern-btn-outline" id="prevBtn" onclick="changeStep(-1)" style="display: none;">
+                                            <i class="fas fa-arrow-left me-2"></i>Previous
+                                        </button>
+                                        <button type="button" class="btn btn-financial modern-btn-primary" id="nextBtn" onclick="changeStep(1)">
+                                            Next<i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div class="tab-pane fade" id="analysis-section">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="financial-score">
+                            <div class="score-circle">
+                                <h2 id="financialScore">--</h2>
+                            </div>
+                            <h5>Financial Health Score</h5>
+                            <p id="scoreDescription">Complete the form to see your score</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h3 id="savingsRate">--%</h3>
+                                        <p class="mb-0">Savings Rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <h3 id="debtRatio">--%</h3>
+                                        <p class="mb-0">Debt-to-Income Ratio</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h3 id="emergencyMonths">-- months</h3>
+                                        <p class="mb-0">Emergency Fund Coverage</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h3 id="investmentRate">--%</h3>
+                                        <p class="mb-0">Investment Rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 50-30-20 Rule Breakdown -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5><i class="fas fa-pie-chart me-2"></i>50-30-20 Rule Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="progress mb-2" style="height: 25px;">
+                                                <div class="progress-bar bg-success" id="needsProgress" style="width: 0%">50%</div>
+                                            </div>
+                                            <h6>Needs (50%)</h6>
+                                            <p class="text-muted small">Essential expenses</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="progress mb-2" style="height: 25px;">
+                                                <div class="progress-bar bg-warning" id="wantsProgress" style="width: 0%">30%</div>
+                                            </div>
+                                            <h6>Wants (30%)</h6>
+                                            <p class="text-muted small">Lifestyle expenses</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <div class="progress mb-2" style="height: 25px;">
+                                                <div class="progress-bar bg-info" id="savingsProgress" style="width: 0%">20%</div>
+                                            </div>
+                                            <h6>Savings (20%)</h6>
+                                            <p class="text-muted small">Investments & savings</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enhanced Financial Insights -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6><i class="fas fa-shield-alt me-2"></i>Insurance Coverage</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="insuranceCoverage">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>Term Insurance</span>
+                                                <span class="badge bg-secondary" id="termInsuranceStatus">Not Set</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>Health Insurance</span>
+                                                <span class="badge bg-secondary" id="healthInsuranceStatus">Not Set</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>Life Insurance</span>
+                                                <span class="badge bg-secondary" id="lifeInsuranceStatus">Not Set</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6><i class="fas fa-calculator me-2"></i>Key Ratios</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span>Debt-to-Income Ratio</span>
+                                            <span class="fw-bold" id="debtToIncomeRatio">--</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span>Emergency Fund Coverage</span>
+                                            <span class="fw-bold" id="emergencyFundCoverage">--</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>Investment Allocation</span>
+                                            <span class="fw-bold" id="investmentAllocation">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIP Calculator Section -->
+            <div class="tab-pane fade" id="sip-calculator-section">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-calculator me-2"></i>SIP Calculator</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="sipCalculatorForm">
+                                    <div class="mb-3">
+                                        <div class="input-group-modern">
+                                            <div class="input-icon">
+                                                <i class="fas fa-rupee-sign"></i>
+                                            </div>
+                                            <div class="form-floating">
+                                                <input type="number" class="form-control modern-input" id="sipAmount" value="5000" min="500" step="500" placeholder="₹5,000">
+                                                <label for="sipAmount">Monthly SIP Amount (₹)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="input-group-modern">
+                                            <div class="input-icon">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </div>
+                                            <div class="form-floating">
+                                                <input type="number" class="form-control modern-input" id="sipPeriod" value="10" min="1" max="50" placeholder="10 years">
+                                                <label for="sipPeriod">Investment Period (Years)</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-range-container mt-2">
+                                            <input type="range" class="form-range modern-range" id="sipPeriodRange" min="1" max="50" value="10">
+                                            <div class="d-flex justify-content-between text-muted small">
+                                                <span>1 year</span>
+                                                <span>50 years</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="input-group-modern">
+                                            <div class="input-icon">
+                                                <i class="fas fa-percentage"></i>
+                                            </div>
+                                            <div class="form-floating">
+                                                <input type="number" class="form-control modern-input" id="sipReturn" value="12" min="1" max="30" step="0.5" placeholder="12%">
+                                                <label for="sipReturn">Expected Annual Return (%)</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-range-container mt-2">
+                                            <input type="range" class="form-range modern-range" id="sipReturnRange" min="1" max="30" value="12" step="0.5">
+                                            <div class="d-flex justify-content-between text-muted small">
+                                                <span>1%</span>
+                                                <span>30%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="modern-checkbox">
+                                            <input class="modern-check-input" type="checkbox" id="stepUpSip">
+                                            <label class="modern-check-label" for="stepUpSip">
+                                                <div class="check-icon">
+                                                    <i class="fas fa-trending-up"></i>
+                                                </div>
+                                                <div class="check-content">
+                                                    <strong>Step-up SIP</strong>
+                                                    <span>Increase investment annually</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div id="stepUpSection" style="display: none;" class="mt-2">
+                                            <div class="input-group-modern">
+                                                <div class="input-icon">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                </div>
+                                                <div class="form-floating">
+                                                    <input type="number" class="form-control modern-input" id="stepUpPercent" value="10" min="5" max="20" placeholder="10%">
+                                                    <label for="stepUpPercent">Annual Step-up (%)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-financial w-100" onclick="calculateSIP()">
+                                        <i class="fas fa-chart-line me-2"></i>Calculate Returns
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-bar me-2"></i>Investment Results</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="sipResults">
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">Enter SIP details to see projected returns</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- SIP Comparison Chart -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h6><i class="fas fa-chart-area me-2"></i>Growth Projection</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="sipChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SIP Investment Strategies -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-lightbulb me-2"></i>SIP Investment Strategies</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="strategy-card conservative">
+                                            <h6><i class="fas fa-shield me-2"></i>Conservative (8-10%)</h6>
+                                            <p class="small">Debt funds, balanced funds</p>
+                                            <ul class="small">
+                                                <li>Lower risk</li>
+                                                <li>Stable returns</li>
+                                                <li>Good for short-term goals</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="strategy-card moderate">
+                                            <h6><i class="fas fa-balance-scale me-2"></i>Moderate (10-12%)</h6>
+                                            <p class="small">Balanced funds, hybrid funds</p>
+                                            <ul class="small">
+                                                <li>Balanced risk-return</li>
+                                                <li>Diversified portfolio</li>
+                                                <li>Medium-term goals</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="strategy-card aggressive">
+                                            <h6><i class="fas fa-rocket me-2"></i>Aggressive (12-15%)</h6>
+                                            <p class="small">Equity funds, growth funds</p>
+                                            <ul class="small">
+                                                <li>Higher potential returns</li>
+                                                <li>Higher volatility</li>
+                                                <li>Long-term wealth creation</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommendations Section -->
+            <div class="tab-pane fade" id="recommendations-section">
+                <div id="recommendationsContent">
+                    <div class="text-center py-5">
+                        <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">Complete your financial profile to get personalized recommendations</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/financial-advisor.js') }}"></script>
+    
+    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        });
+    </script>
+</body>
+</html>

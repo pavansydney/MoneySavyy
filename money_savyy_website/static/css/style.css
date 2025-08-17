@@ -1,5 +1,44 @@
 /* Money Savyy - Custom Styles */
 
+/* Theme Variables */
+:root {
+    /* Light Theme */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --border-color: #e9ecef;
+    --border-focus: #007bff;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --shadow-medium: rgba(0, 0, 0, 0.1);
+    --shadow-heavy: rgba(0, 0, 0, 0.15);
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --input-bg: rgba(255, 255, 255, 0.95);
+    --navbar-bg: rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="dark"] {
+    /* Dark Theme */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-card: #2a2a2a;
+    --text-primary: #f7fafc;
+    --text-secondary: #e2e8f0;
+    --text-muted: #a0aec0;
+    --border-color: #404040;
+    --border-focus: #4dabf7;
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.4);
+    --shadow-heavy: rgba(0, 0, 0, 0.5);
+    --gradient-primary: linear-gradient(135deg, #4c6ef5 0%, #5c7cfa 100%);
+    --gradient-secondary: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    --input-bg: rgba(42, 42, 42, 0.95);
+    --navbar-bg: rgba(26, 26, 26, 0.95);
+}
+
 /* Global Styles */
 * {
     margin: 0;
@@ -10,7 +49,48 @@
 body {
     font-family: 'Poppins', sans-serif;
     line-height: 1.6;
-    color: #333;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: all 0.3s ease;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px var(--shadow-medium);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px var(--shadow-heavy);
+}
+
+/* Navigation Updates */
+.navbar {
+    background: var(--navbar-bg) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand,
+.nav-link {
+    color: var(--text-primary) !important;
+}
+
+.nav-link:hover {
+    color: var(--border-focus) !important;
 }
 
 /* Hero Section */
@@ -488,4 +568,1226 @@ body {
 
 .suggestions-dropdown::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+/* Landing Page Styles */
+.landing-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.landing-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.landing-hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+.floating-icon {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.service-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.service-card .card-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.service-card h3 {
+    color: #fff;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.service-card p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.feature-card .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #ffd700;
+}
+
+.stats-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 3rem;
+}
+
+.stat-item {
+    text-align: center;
+    color: #fff;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Financial Advisor Styles */
+.financial-hero {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    min-height: 50vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.financial-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.financial-hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #6c757d;
+    position: relative;
+}
+
+.step.active {
+    background: #007bff;
+    color: white;
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: calc(100vw / 4 - 60px);
+    height: 2px;
+    background: #e9ecef;
+    transform: translateY(-50%);
+}
+
+.step.completed:not(:last-child)::after {
+    background: #28a745;
+}
+
+.metric-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(#28a745 0deg, #28a745 calc(var(--score) * 3.6deg), #e9ecef calc(var(--score) * 3.6deg));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    position: relative;
+}
+
+.score-circle::before {
+    content: '';
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+}
+
+.score-text {
+    position: relative;
+    z-index: 1;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.rule-section {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.rule-bar {
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #e9ecef;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.rule-segment {
+    height: 100%;
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.needs { background: #e74c3c; }
+.wants { background: #f39c12; }
+.savings { background: #27ae60; }
+
+.advice-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid;
+}
+
+.advice-card.budget { border-left-color: #3498db; }
+.advice-card.debt { border-left-color: #e74c3c; }
+.advice-card.insurance { border-left-color: #9b59b6; }
+.advice-card.investment { border-left-color: #27ae60; }
+
+.btn-financial {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-financial:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .step-indicator {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .step:not(:last-child)::after {
+        display: none;
+    }
+    
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+    
+    .service-card,
+    .feature-card {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Investment Strategy Cards */
+.strategy-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.strategy-card:hover {
+    transform: translateY(-2px);
+}
+
+.strategy-card.conservative {
+    border-left-color: #17a2b8;
+}
+
+.strategy-card.moderate {
+    border-left-color: #ffc107;
+}
+
+.strategy-card.aggressive {
+    border-left-color: #dc3545;
+}
+
+.strategy-card h6 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-card ul {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+.strategy-card li {
+    margin-bottom: 0.25rem;
+    color: #666;
+}
+
+/* Form Range Container */
+.form-range-container {
+    margin-top: 0.5rem;
+}
+
+.form-range {
+    width: 100%;
+}
+
+/* SIP Calculator Specific Styles */
+#sipChart {
+    max-height: 300px;
+}
+
+.metric-card.bg-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+}
+
+.metric-card.bg-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+}
+
+.metric-card.bg-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+}
+
+/* Enhanced Analysis Cards */
+.financial-score {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(
+        #28a745 0deg,
+        #28a745 calc(var(--score, 50) * 3.6deg),
+        #e9ecef calc(var(--score, 50) * 3.6deg)
+    );
+    position: relative;
+}
+
+.score-circle::before {
+    content: '';
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.score-circle h2 {
+    position: relative;
+    z-index: 1;
+    color: #333;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Insurance Status Badges */
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Step-up SIP Section */
+#stepUpSection {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* Enhanced Alert Styles */
+.alert-info {
+    border-left: 4px solid #17a2b8;
+    background: linear-gradient(90deg, rgba(23, 162, 184, 0.1), rgba(255, 255, 255, 0.1));
+}
+
+/* Animation for metric cards */
+.metric-card {
+    animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced Progress Bars */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.8s ease-in-out;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Custom Checkbox Styles */
+.form-check-input:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.form-check-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Enhanced Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Modern Form Styling - Simplified and Fixed */
+.input-group-modern {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    color: var(--text-muted, #718096);
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    pointer-events: none;
+    width: 20px;
+    text-align: center;
+}
+
+.modern-input {
+    background: var(--input-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem 0.75rem 50px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px var(--shadow-light) !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    color: var(--text-primary) !important;
+    width: 100% !important;
+    height: 52px !important;
+    font-weight: 500 !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Override Bootstrap form-control specifically */
+.form-control.modern-input {
+    background: var(--input-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    font-weight: 500 !important;
+}
+
+.modern-input:focus,
+.form-control.modern-input:focus {
+    border-color: var(--border-focus) !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1), 0 4px 12px var(--shadow-medium) !important;
+    background: var(--bg-card) !important;
+    outline: none !important;
+    color: var(--text-primary) !important;
+    transform: translateY(-1px) !important;
+    z-index: 10 !important;
+}
+
+.modern-input:focus ~ .input-icon {
+    color: var(--border-focus) !important;
+    transform: translateY(-50%) scale(1.1) !important;
+}
+
+/* Ensure text visibility in all states */
+.modern-input,
+.modern-input:focus,
+.modern-input:active,
+.modern-input:hover,
+.form-control.modern-input,
+.form-control.modern-input:focus,
+.form-control.modern-input:active {
+    color: var(--text-primary) !important;
+    background: var(--input-bg) !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+/* Fix for webkit autofill */
+.modern-input:-webkit-autofill,
+.modern-input:-webkit-autofill:hover,
+.modern-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text-primary) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-bg) inset !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Simplified Floating Label System */
+.form-floating {
+    position: relative;
+}
+
+.form-floating > label {
+    position: absolute;
+    top: 50%;
+    left: 50px;
+    transform: translateY(-50%);
+    z-index: 5;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    color: var(--text-muted, #718096);
+    font-size: 1rem;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
+/* When input has focus OR has content */
+.form-floating > .modern-input:focus ~ label,
+.form-floating > .modern-input:not(:placeholder-shown) ~ label {
+    top: -18px;
+    left: 46px;
+    transform: translateY(0) scale(0.8);
+    color: var(--border-focus, #007bff) !important;
+    font-weight: 600 !important;
+    background: var(--bg-primary) !important;
+    padding: 0 4px;
+    z-index: 1;
+}
+
+/* Ensure placeholder is hidden when using floating labels */
+.form-floating .modern-input::placeholder {
+    color: transparent;
+}
+
+/* Show a subtle placeholder when focused */
+.form-floating .modern-input:focus::placeholder {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* Modern Checkbox Styling */
+.modern-checkbox {
+    margin-bottom: 1rem;
+}
+
+.modern-check-input {
+    display: none;
+}
+
+.modern-check-label {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    color: var(--text-primary);
+}
+
+.modern-check-label:hover {
+    border-color: var(--border-focus);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--shadow-medium);
+}
+
+.modern-check-input:checked + .modern-check-label {
+    background: var(--gradient-primary);
+    border-color: var(--border-focus);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px var(--shadow-heavy);
+}
+
+.modern-check-input:checked + .modern-check-label::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modern-check-input:checked + .modern-check-label::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #007bff;
+    z-index: 1;
+}
+
+.check-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+}
+
+.modern-check-input:checked + .modern-check-label .check-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: scale(1.1);
+}
+
+.check-icon i {
+    font-size: 1.5rem;
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.modern-check-input:checked + .modern-check-label .check-icon i {
+    color: white;
+}
+
+.check-content {
+    flex: 1;
+}
+
+.check-content strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.check-content span {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Form Step Animations */
+.form-step {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.5s ease;
+    display: none;
+}
+
+.form-step.active {
+    opacity: 1;
+    transform: translateX(0);
+    display: block;
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Floating Label Animations */
+.form-floating {
+    position: relative;
+}
+
+.form-floating label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 1rem 0.75rem;
+    pointer-events: none;
+    border: 1px solid transparent;
+    transform-origin: 0 0;
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+}
+
+/* Enhanced Button Styling */
+.btn-financial {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-financial::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-financial:hover::before {
+    left: 100%;
+}
+
+.btn-financial:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    color: white;
+}
+
+.modern-btn-outline {
+    border: 2px solid #007bff;
+    color: #007bff;
+    background: transparent;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-btn-outline:hover {
+    background: #007bff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.modern-btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 2rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+.modern-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+    color: white;
+}
+
+/* Modern Range Slider */
+.modern-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #e9ecef;
+    outline: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.modern-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.modern-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.modern-range::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.modern-range::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.modern-range::-webkit-slider-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.modern-range::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border: none;
+}
+
+/* Form Range Container Enhancement */
+.form-range-container {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Card Hover Effects */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px var(--shadow-light);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--shadow-heavy);
+}
+
+.card-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.card-body {
+    color: var(--text-primary);
+}
+
+/* Loading Animation for Form */
+.form-step.loading {
+    position: relative;
+}
+
+.form-step.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-step.loading::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 11;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Pulse Animation for Icons */
+.input-icon i {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        transform: translateY(-50%) scale(1.1);
+    }
+    100% {
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+.modern-input:focus ~ .input-icon i {
+    animation: none;
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Progress Bar Animation */
+.step-indicator {
+    position: relative;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.step-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border-radius: 3px;
+    transition: width 0.8s ease;
+    position: relative;
+}
+
+.step-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 20px 20px;
+    animation: move 2s linear infinite;
+}
+
+@keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 20px 20px;
+    }
+}
+
+/* Input Focus Effects */
+.modern-input:focus {
+    animation: inputFocus 0.3s ease;
+}
+
+@keyframes inputFocus {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive Form Styling */
+@media (max-width: 768px) {
+    .theme-toggle {
+        top: 80px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .modern-check-label {
+        padding: 0.75rem;
+    }
+    
+    .check-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.75rem;
+    }
+    
+    .check-icon i {
+        font-size: 1.25rem;
+    }
+    
+    .modern-input,
+    .form-control.modern-input {
+        padding: 0.75rem 0.75rem 0.75rem 45px !important;
+        font-size: 0.9rem !important;
+        height: 48px !important;
+        font-weight: 500 !important;
+        color: var(--text-primary) !important;
+    }
+    
+    .modern-input:focus,
+    .form-control.modern-input:focus {
+        color: var(--text-primary) !important;
+        background: var(--bg-card) !important;
+    }
+    
+    .input-icon {
+        left: 14px !important;
+        font-size: 0.9rem !important;
+        width: 18px !important;
+    }
+    
+    .form-floating > label {
+        left: 45px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .form-floating > .modern-input:focus ~ label,
+    .form-floating > .modern-input:not(:placeholder-shown) ~ label {
+        top: -6px !important;
+        left: 42px !important;
+        font-size: 0.75rem !important;
+        transform: translateY(0) scale(0.85) !important;
+    }
+    
+    .modern-btn-outline,
+    .modern-btn-primary,
+    .btn-financial {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Input Focus Animation Enhancement */
+.modern-input:focus {
+    animation: inputFocusEnhanced 0.3s ease;
+}
+
+@keyframes inputFocusEnhanced {
+    0% {
+        transform: scale(1) translateY(0);
+    }
+    50% {
+        transform: scale(1.01) translateY(-1px);
+    }
+    100% {
+        transform: scale(1) translateY(-2px);
+    }
+}
+
+/* Placeholder Enhancement */
+.modern-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.modern-input:focus::placeholder {
+    opacity: 0.5;
+}
+
+/* Label floating animation */
+.form-floating > label {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced checkbox animation */
+.modern-check-input:checked + .modern-check-label {
+    animation: checkboxSuccess 0.3s ease;
+}
+
+@keyframes checkboxSuccess {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1) translateY(-2px);
+    }
+}
+
+/* Icon pulse animation refinement */
+.input-icon i {
+    transition: all 0.3s ease;
+}
+
+.modern-input:focus ~ .input-icon i {
+    animation: iconPulse 0.3s ease;
+}
+
+@keyframes iconPulse {
+    0% {
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        transform: translateY(-50%) scale(1.2);
+    }
+    100% {
+        transform: translateY(-50%) scale(1.1);
+    }
 }
