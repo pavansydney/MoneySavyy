@@ -66,7 +66,7 @@ UPCOMING_FEATURES = [
     }
 ]
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import yfinance as yf
 import pandas as pd
@@ -1483,6 +1483,10 @@ def create_fallback_result_structure(data, symbol):
 
 app = Flask(__name__)
 CORS(app)
+
+# Configure static files for production
+app.static_folder = 'static'
+app.static_url_path = '/static'
 
 # Rate limiting storage
 last_request_time = {}
@@ -3067,6 +3071,34 @@ def financial_advisor():
 def about():
     """About page"""
     return render_template('about.html')
+
+@app.route('/founder-image')
+def founder_image():
+    """Serve founder image directly"""
+    import os
+    image_path = os.path.join(app.static_folder, 'images', 'Picture1.png')
+    print(f"Looking for image at: {image_path}")
+    print(f"File exists: {os.path.exists(image_path)}")
+    return send_from_directory('static/images', 'Picture1.png')
+
+@app.route('/static/images/<filename>')
+def serve_image(filename):
+    """Serve images directly - fallback for static files"""
+    import os
+    image_path = os.path.join(app.static_folder, 'images', filename)
+    print(f"Looking for image at: {image_path}")
+    print(f"File exists: {os.path.exists(image_path)}")
+    return send_from_directory('static/images', filename)
+
+@app.route('/static/css/<filename>')
+def serve_css(filename):
+    """Serve CSS files directly - fallback for static files"""
+    return send_from_directory('static/css', filename)
+
+@app.route('/static/js/<filename>')
+def serve_js(filename):
+    """Serve JS files directly - fallback for static files"""
+    return send_from_directory('static/js', filename)
 
 @app.route('/api/analyze-finances', methods=['POST'])
 def analyze_finances():
