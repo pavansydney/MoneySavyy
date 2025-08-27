@@ -16,105 +16,10 @@
             --dark-gradient: linear-gradient(135deg, #232526 0%, #414345 100%);
         }
 
-        body {
-            margin: 0;
-        }
-
-        /* Modern Navbar Override Styles with highest specificity */
-        body .navbar.navbar-expand-lg.fixed-top {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
-            backdrop-filter: blur(20px) !important;
-            background: rgba(255, 255, 255, 0.95) !important;
-            transition: all 0.3s ease !important;
-            padding: 1rem 0 !important;
-            border-bottom: none !important;
-        }
-
-        body .navbar .navbar-brand {
-            color: #2d3748 !important;
-            font-weight: 700 !important;
-            font-size: 1.5rem !important;
-            display: flex !important;
-            align-items: center !important;
-            transition: all 0.3s ease !important;
-        }
-
-        body .navbar .navbar-brand:hover {
-            color: #667eea !important;
-            transform: translateY(-1px) !important;
-        }
-
-        body .navbar .navbar-brand i {
-            background: var(--primary-gradient) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            background-clip: text !important;
-            font-size: 1.3rem !important;
-        }
-
-        body .navbar .navbar-nav .nav-link {
-            color: #4a5568 !important;
-            font-weight: 500 !important;
-            padding: 0.75rem 1.25rem !important;
-            border-radius: 12px !important;
-            margin: 0 0.25rem !important;
-            transition: all 0.3s ease !important;
-            position: relative !important;
-            overflow: hidden !important;
-        }
-
-        body .navbar .navbar-nav .nav-link:before {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: -100% !important;
-            width: 100% !important;
-            height: 100% !important;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent) !important;
-            transition: left 0.5s !important;
-        }
-
-        body .navbar .navbar-nav .nav-link:hover:before {
-            left: 100% !important;
-        }
-
-        body .navbar .navbar-nav .nav-link:hover {
-            color: #667eea !important;
-            background: rgba(102, 126, 234, 0.1) !important;
-            transform: translateY(-2px) !important;
-        }
-
-        body .navbar .navbar-nav .nav-link.active {
-            color: white !important;
-            background: var(--primary-gradient) !important;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
-        }
-
-        body .navbar .navbar-nav .nav-link.active:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
-        }
-
-        body .navbar .navbar-nav .nav-link i {
-            margin-right: 0.5rem !important;
-            font-size: 0.9rem !important;
-        }
-
-        body .navbar .navbar-toggler {
-            border: none !important;
-            padding: 0.5rem !important;
-            border-radius: 8px !important;
-            background: rgba(102, 126, 234, 0.1) !important;
-        }
-
-        body .navbar .navbar-toggler:focus {
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25) !important;
-        }
-
         .wealth-hero {
             background: var(--primary-gradient);
             color: white;
-            padding: 8rem 0 4rem;
+            padding: 4rem 0;
             position: relative;
             overflow: hidden;
         }
@@ -160,8 +65,49 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        .professional-tabs {
+        .step-indicator {
+            display: flex;
+            justify-content: center;
             margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            margin: 0 1rem;
+        }
+
+        .step.active {
+            background: var(--primary-gradient);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step.completed {
+            background: var(--success-gradient);
+            color: white;
         }
 
         .premium-tab {
@@ -362,6 +308,11 @@
                 padding: 2rem 0;
             }
             
+            .step-indicator {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
             .premium-tab {
                 padding: 0.75rem 1rem;
                 font-size: 0.875rem;
@@ -370,43 +321,6 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-chart-line me-2"></i>
-                Money Savyy
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">
-                            <i class="fas fa-home"></i>Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/stock-analysis">
-                            <i class="fas fa-chart-bar"></i>Stock Analysis
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/financial-advisor">
-                            <i class="fas fa-user-tie"></i>Financial Advisor
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about">
-                            <i class="fas fa-info-circle"></i>About
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
     <!-- Professional Header -->
     <div class="wealth-hero">
         <div class="container">
@@ -453,7 +367,7 @@
                 <div class="col-lg-4 text-center">
                     <div class="wealth-metric">
                         <div class="metric-value">₹50L+</div>
-                        <p class="mb-0" style="color: black;">Average Portfolio Growth</p>
+                        <p class="mb-0">Average Portfolio Growth</p>
                         <small class="text-muted">Over 5 years with our strategies</small>
                     </div>
                 </div>
@@ -463,6 +377,15 @@
 
     <!-- Main Content -->
     <div class="container mt-5">
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step-1">1</div>
+            <div class="step" id="step-2">2</div>
+            <div class="step" id="step-3">3</div>
+            <div class="step" id="step-4">4</div>
+            <div class="step" id="step-5">5</div>
+        </div>
+
         <!-- Form Sections -->
         <!-- Step 1: Personal Information -->
         <div class="form-section active" id="section-1">
@@ -705,40 +628,21 @@
                         <!-- Portfolio Analysis Tab -->
                         <div class="tab-pane fade" id="portfolio-analysis">
                             <div class="row">
-                                <div class="col-lg-6 mb-4">
-                                    <div class="professional-card p-4">
-                                        <h5 class="mb-3">
-                                            <i class="fas fa-chart-pie me-2"></i>
-                                            Current Asset Allocation
-                                        </h5>
-                                        <div style="position: relative; height: 300px;">
-                                            <canvas id="current-allocation-chart"></canvas>
-                                        </div>
-                                        <div class="mt-3">
-                                            <div id="current-allocation-details"></div>
-                                        </div>
+                                <div class="col-lg-6">
+                                    <div class="portfolio-allocation">
+                                        <h5 class="mb-3">Current Asset Allocation</h5>
+                                        <canvas id="current-allocation-chart" width="400" height="400"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="professional-card p-4">
-                                        <h5 class="mb-3">
-                                            <i class="fas fa-bullseye me-2"></i>
-                                            Recommended Allocation
-                                        </h5>
-                                        <div style="position: relative; height: 300px;">
-                                            <canvas id="recommended-allocation-chart"></canvas>
-                                        </div>
-                                        <div class="mt-3">
-                                            <div id="recommended-allocation-details"></div>
-                                        </div>
+                                <div class="col-lg-6">
+                                    <div class="portfolio-allocation">
+                                        <h5 class="mb-3">Recommended Allocation</h5>
+                                        <canvas id="recommended-allocation-chart" width="400" height="400"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-12 mt-4">
                                     <div class="professional-card p-4">
-                                        <h5 class="mb-3">
-                                            <i class="fas fa-balance-scale me-2"></i>
-                                            Rebalancing Strategy
-                                        </h5>
+                                        <h5>Rebalancing Strategy</h5>
                                         <div id="rebalancing-strategy"></div>
                                     </div>
                                 </div>

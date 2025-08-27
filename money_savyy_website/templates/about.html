@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Money Savvy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --dark-gradient: linear-gradient(135deg, #232526 0%, #414345 100%);
+        }
+
+        /* Modern Navbar Override Styles with highest specificity */
+        body .navbar.navbar-expand-lg.fixed-top {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+            backdrop-filter: blur(20px) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            transition: all 0.3s ease !important;
+            padding: 1rem 0 !important;
+            border-bottom: none !important;
+        }
+
+        body .navbar .navbar-brand {
+            color: #2d3748 !important;
+            font-weight: 700 !important;
+            font-size: 1.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            transition: all 0.3s ease !important;
+        }
+
+        body .navbar .navbar-brand:hover {
+            color: #667eea !important;
+            transform: translateY(-1px) !important;
+        }
+
+        body .navbar .navbar-brand i {
+            background: var(--primary-gradient) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            font-size: 1.3rem !important;
+        }
+
+        body .navbar .navbar-nav .nav-link {
+            color: #4a5568 !important;
+            font-weight: 500 !important;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 12px !important;
+            margin: 0 0.25rem !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        body .navbar .navbar-nav .nav-link:before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent) !important;
+            transition: left 0.5s !important;
+        }
+
+        body .navbar .navbar-nav .nav-link:hover:before {
+            left: 100% !important;
+        }
+
+        body .navbar .navbar-nav .nav-link:hover {
+            color: #667eea !important;
+            background: rgba(102, 126, 234, 0.1) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .navbar-nav .nav-link.active {
+            color: white !important;
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .navbar-nav .nav-link.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .navbar-nav .nav-link i {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+        }
+
+        .about-hero {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 8rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="80" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="60" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-100px); }
+        }
+
+        .professional-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .professional-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary-gradient);
+        }
+
+        .professional-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .founder-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .founder-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .stats-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+
+        .stats-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mission-card {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mission-card::before {
+            content: '💡';
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+
+        .achievement-badge {
+            background: white;
+            color: #667eea;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin: 0.5rem;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .achievement-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .contact-info {
+            background: var(--dark-gradient);
+            color: white;
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .social-link {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-gradient);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 2rem 0;
+            padding: 0 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .timeline-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+            .about-hero {
+                padding: 6rem 0 3rem;
+            }
+            
+            .founder-image {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .timeline::before {
+                left: 2rem;
+            }
+            
+            .timeline-item::before {
+                left: 2rem;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 4rem);
+                margin-left: 4rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-chart-line me-2"></i>
+                Money Savyy
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/stock-analysis">
+                            <i class="fas fa-chart-bar"></i>Stock Analysis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/financial-advisor">
+                            <i class="fas fa-user-tie"></i>Financial Advisor
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">
+                            <i class="fas fa-info-circle"></i>About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="about-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-3 fw-bold mb-4">
+                        Meet the Visionary Behind
+                        <span class="text-warning">Money Savyy</span>
+                    </h1>
+                    <p class="lead mb-4">
+                        Empowering financial decisions through AI-powered insights and professional wealth management solutions.
+                    </p>
+                    <div class="d-flex flex-wrap">
+                        <div class="achievement-badge">
+                            <i class="fas fa-rocket me-2"></i>Fintech Innovator
+                        </div>
+                        <div class="achievement-badge">
+                            <i class="fas fa-brain me-2"></i>AI Enthusiast
+                        </div>
+                        <!-- <div class="achievement-badge">
+                            <i class="fas fa-chart-line me-2"></i>Investment Expert
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="{{ url_for('static', filename='images/Picture1.png') }}" 
+                         alt="Chilakalapalli Pavan Kalyan" 
+                         class="founder-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="professional-card p-5 mb-5">
+                        <div class="text-center mb-4">
+                            <h2 class="display-5 fw-bold">
+                                <i class="fas fa-user-circle me-3"></i>
+                                Ch Pavan Kalyan
+                            </h2>
+                            <!-- <p class="lead text-muted">Developer, Money Savyy</p> -->
+                            <div class="d-flex justify-content-center align-items-center mb-3">
+                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                <span class="text-muted">Hyderabad, India</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-lightbulb me-2 text-primary"></i>Vision</h5>
+                                <p class="mb-4">
+                                    To democratize financial planning and make professional-grade investment advice 
+                                    accessible to every Indian investor through cutting-edge AI technology.
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-target me-2 text-primary"></i>Mission</h5>
+                                <p class="mb-4">
+                                    Empowering individuals to make informed financial decisions by providing 
+                                    AI-powered stock analysis, personalized investment strategies, and professional wealth management guidance.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <h5 class="mb-3">Want To Collaborate ? </h5>
+                            <div class="row justify-content-center">
+                                <div class="col-md-4 mb-3">
+                                    <a href="https://www.linkedin.com/in/chilakalapalli-pavan-kalyan-141267119/?originalSubdomain=in" 
+                                       target="_blank" class="text-decoration-none">
+                                        <div class="d-flex align-items-center justify-content-center p-3 rounded" 
+                                             style="background: rgba(102, 126, 234, 0.1); transition: all 0.3s ease;"
+                                             onmouseover="this.style.background='rgba(102, 126, 234, 0.2)'"
+                                             onmouseout="this.style.background='rgba(102, 126, 234, 0.1)'">
+                                            <i class="fab fa-linkedin-in fa-2x me-3 text-primary"></i>
+                                            <div>
+                                                <h6 class="mb-0 text-dark">LinkedIn</h6>
+                                                <small class="text-muted">Professional Network</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="https://github.com/pavansydney" 
+                                       target="_blank" class="text-decoration-none">
+                                        <div class="d-flex align-items-center justify-content-center p-3 rounded" 
+                                             style="background: rgba(102, 126, 234, 0.1); transition: all 0.3s ease;"
+                                             onmouseover="this.style.background='rgba(102, 126, 234, 0.2)'"
+                                             onmouseout="this.style.background='rgba(102, 126, 234, 0.1)'">
+                                            <i class="fab fa-github fa-2x me-3 text-dark"></i>
+                                            <div>
+                                                <h6 class="mb-0 text-dark">GitHub</h6>
+                                                <small class="text-muted">Code Repository</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <a href="https://www.youtube.com/@pavankalyanchilakalapalli5789/videos" 
+                                       target="_blank" class="text-decoration-none">
+                                        <div class="d-flex align-items-center justify-content-center p-3 rounded" 
+                                             style="background: rgba(102, 126, 234, 0.1); transition: all 0.3s ease;"
+                                             onmouseover="this.style.background='rgba(102, 126, 234, 0.2)'"
+                                             onmouseout="this.style.background='rgba(102, 126, 234, 0.1)'">
+                                            <i class="fab fa-youtube fa-2x me-3 text-danger"></i>
+                                            <div>
+                                                <h6 class="mb-0 text-dark">YouTube</h6>
+                                                <small class="text-muted">Educational Content</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <h5 class="mb-3">About the Founder</h5>
+                            <p class="text-muted mb-4">
+                                Chilakalapalli Pavan Kalyan is a passionate fintech entrepreneur and the driving force behind Money Savyy. 
+                                Based in Hyderabad, Pavan combines his deep understanding of financial markets with cutting-edge 
+                                artificial intelligence to create innovative solutions for modern investors.
+                            </p>
+                            <p class="text-muted mb-4">
+                                With a vision to bridge the gap between complex financial planning and everyday investors, 
+                                Pavan founded Money Savyy to provide professional-grade financial advisory services powered by AI. 
+                                His commitment to financial literacy and technological innovation drives the platform's mission 
+                                to make smart investing accessible to all.
+                            </p>
+                            <p class="text-muted">
+                                Under his leadership, Money Savyy has evolved into a comprehensive financial platform offering 
+                                AI-powered stock analysis, personalized investment recommendations, and professional wealth management 
+                                services, helping thousands of users make informed financial decisions.
+                            </p>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Features -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">What Makes Money Savyy Special</h2>
+                <p class="lead text-muted">Revolutionary features that set us apart in the fintech landscape</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="stats-card">
+                        <div class="stats-number">AI</div>
+                        <h5>Powered Intelligence</h5>
+                        <p class="text-muted">Advanced Gemini AI integration for comprehensive financial analysis and personalized recommendations</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="stats-card">
+                        <div class="stats-number">24/7</div>
+                        <h5>Market Analysis</h5>
+                        <p class="text-muted">Real-time stock analysis, sentiment tracking, and market insights to keep you ahead</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="stats-card">
+                        <div class="stats-number">CFP</div>
+                        <h5>Level Advisory</h5>
+                        <p class="text-muted">Professional-grade financial planning typically available only to high-net-worth individuals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Statement -->
+    <section class="py-5">
+        <div class="container">
+            <div class="mission-card">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h3 class="fw-bold mb-3">Our Commitment to Your Financial Future</h3>
+                        <p class="mb-4">
+                            At Money Savyy, we believe that everyone deserves access to professional financial guidance. 
+                            Our AI-powered platform democratizes wealth management, making sophisticated investment strategies 
+                            and financial planning tools available to every investor, regardless of their portfolio size.
+                        </p>
+                        <p class="mb-0">
+                            We're not just building a fintech platform; we're creating a financial companion that grows with you, 
+                            learns from market trends, and provides personalized insights to help you achieve your financial goals.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <i class="fas fa-handshake fa-5x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="contact-info text-center">
+                        <h3 class="fw-bold mb-4">Get in Touch</h3>
+                        <p class="mb-4">
+                            Have questions about Money Savyy or want to learn more about our vision? 
+                            We'd love to hear from you.
+                        </p>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-envelope fa-2x me-3"></i>
+                                    <div>
+                                        <h6 class="mb-0">Email</h6>
+                                        <small>pavankalyan81099@gmail.com</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-map-marker-alt fa-2x me-3"></i>
+                                    <div>
+                                        <h6 class="mb-0">Location</h6>
+                                        <small>Hyderabad, India</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6 class="mb-3">Connect with Pavan</h6>
+                            <a href="https://www.linkedin.com/in/chilakalapalli-pavan-kalyan-141267119/?originalSubdomain=in" target="_blank" class="social-link" title="LinkedIn Profile">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://github.com/pavansydney" target="_blank" class="social-link" title="GitHub Profile">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="https://www.youtube.com/@pavankalyanchilakalapalli5789/videos" target="_blank" class="social-link" title="YouTube Channel">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h6>Money Savyy - Save Smart Dream Big</h6>
+                    <p class="small mb-0">AI-powered financial planning and investment advisory platform</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <p class="small mb-0">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Secure & Confidential
+                    </p>
+                    <p class="small mb-0">© 2025 Money Savyy. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -11,23 +11,164 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Plotly -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Plotly - Updated to latest version -->
+    <script src="https://cdn.plot.ly/plotly-2.34.0.min.js"></script>
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
+    <!-- Modern Navbar Override Styles - Must be after main CSS -->
+    <style>
+        /* Override navbar styles with highest specificity */
+        body .navbar.navbar-expand-lg.fixed-top {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+            backdrop-filter: blur(20px) !important;
+            background: var(--navbar-bg) !important;
+            transition: all 0.3s ease !important;
+            padding: 1rem 0 !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        body .navbar .navbar-brand {
+            color: var(--text-primary) !important;
+            font-weight: 700 !important;
+            font-size: 1.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            transition: all 0.3s ease !important;
+        }
+
+        body .navbar .navbar-brand:hover {
+            color: #667eea !important;
+            transform: translateY(-1px) !important;
+        }
+
+        body .navbar .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            font-size: 1.3rem !important;
+        }
+
+        body .navbar .navbar-nav .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500 !important;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 12px !important;
+            margin: 0 0.25rem !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        body .navbar .navbar-nav .nav-link:hover {
+            color: #667eea !important;
+            background: rgba(102, 126, 234, 0.1) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        body .navbar .navbar-nav .nav-link.active {
+            color: white !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+        }
+
+        body .navbar .navbar-nav .nav-link.active:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+        }
+
+        body .navbar .navbar-nav .nav-link i {
+            margin-right: 0.5rem !important;
+            font-size: 0.9rem !important;
+        }
+
+        body .navbar .navbar-toggler {
+            border: none !important;
+            padding: 0.5rem !important;
+            border-radius: 8px !important;
+            background: rgba(102, 126, 234, 0.1) !important;
+        }
+
+        body .navbar .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25) !important;
+        }
+
+        /* Enhanced News & Sentiment Section Styles */
+        .list-group-item-action {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+            margin-bottom: 0.25rem;
+            border-radius: 8px !important;
+        }
+
+        .list-group-item-action:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #007bff;
+        }
+
+        .sentiment-score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .sentiment-score {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .news-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-outline-primary:hover,
+        .btn-outline-info:hover,
+        .btn-outline-success:hover,
+        .btn-outline-warning:hover,
+        .btn-outline-danger:hover,
+        .btn-outline-dark:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            border-bottom: 2px solid #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+        }
+    </style>
     <!-- Theme Toggle Button -->
     <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
+            <a class="navbar-brand" href="/">
                 <i class="fas fa-chart-line me-2"></i>
-                Money Savyy
+                {{ app_name or "Money Savyy" }}
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -36,22 +177,22 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/">
-                            <i class="fas fa-home me-1"></i>Home
+                            <i class="fas fa-home"></i>Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#dashboard">
-                            <i class="fas fa-chart-bar me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#analysis">
-                            <i class="fas fa-analytics me-1"></i>Analysis
+                        <a class="nav-link active" href="/stock-analysis">
+                            <i class="fas fa-chart-bar"></i>Stock Analysis
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/financial-advisor">
-                            <i class="fas fa-user-tie me-1"></i>Financial Advisor
+                            <i class="fas fa-user-tie"></i>Financial Advisor
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">
+                            <i class="fas fa-info-circle"></i>About
                         </a>
                     </li>
                 </ul>
@@ -66,10 +207,10 @@
                 <div class="col-lg-6">
                     <div class="hero-content">
                         <h1 class="display-4 fw-bold text-white mb-4">
-                            Money Savyy
+                            {{ app_name or "Money Savyy" }}
                             <span class="text-warning">💰</span>
                         </h1>
-                        <p class="lead text-white mb-4">Save Smart Dream Big</p>
+                        <p class="lead text-white mb-4">{{ app_tagline or "Save Smart Dream Big" }}</p>
                         <p class="text-white-50 mb-5">
                             Advanced AI-powered stock analysis with real-time predictions, 
                             sentiment analysis, and intelligent trading recommendations.
@@ -103,8 +244,8 @@
                         <div class="feature-cards">
                             <div class="feature-card">
                                 <i class="fas fa-robot fa-2x text-warning mb-3"></i>
-                                <h5 class="text-white">AI Predictions</h5>
-                                <p class="text-white-50">Machine learning powered price forecasting</p>
+                                <h5 class="text-white">AI Insights</h5>
+                                <p class="text-white-50">Gemini AI powered comprehensive analysis</p>
                             </div>
                             <div class="feature-card">
                                 <i class="fas fa-newspaper fa-2x text-info mb-3"></i>
@@ -167,6 +308,11 @@
                                         <div class="price-item">
                                             <h3 id="currentPrice" class="fw-bold text-primary mb-1">₹0.00</h3>
                                             <small class="text-muted">Current Price</small>
+                                            <div id="priceIndicator" class="mt-1" style="display: none;">
+                                                <span class="badge bg-success text-white">
+                                                    <i class="fas fa-wifi"></i> Live Price
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -215,8 +361,9 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="prediction-tab" data-bs-toggle="tab" data-bs-target="#prediction" type="button">
-                                    <i class="fas fa-robot me-2"></i>AI Prediction
+                                <button class="nav-link" id="gemini-tab" data-bs-toggle="tab" data-bs-target="#gemini" type="button">
+                                    <i class="fas fa-brain me-2"></i>AI Insights
+                                    <span class="badge bg-primary ms-1">Gemini</span>
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
@@ -241,16 +388,24 @@
                                 </div>
                             </div>
 
-                            <!-- AI Prediction Tab -->
-                            <div class="tab-pane fade" id="prediction" role="tabpanel">
+                            <!-- Gemini AI Insights Tab -->
+                            <div class="tab-pane fade" id="gemini" role="tabpanel">
                                 <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">
-                                            <i class="fas fa-robot text-primary me-2"></i>
-                                            AI Price Prediction (30 Days)
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-brain text-primary me-2"></i>
+                                            Gemini AI Insights
                                         </h5>
-                                        <div id="predictionContent">
-                                            <!-- Prediction content will be loaded here -->
+                                        <span class="badge bg-primary">Powered by Google Gemini</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="geminiContent">
+                                            <div class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading AI insights...</span>
+                                                </div>
+                                                <p class="mt-3 text-muted">Generating AI insights...</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -342,10 +497,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h5 class="mb-2 text-white">Money Savyy</h5>
-                    <p class="text-light mb-2">Save Smart Dream Big</p>
+                    <h5 class="mb-2 text-white">{{ app_name or "Money Savyy" }}</h5>
+                    <p class="text-light mb-2">{{ app_tagline or "Save Smart Dream Big" }}</p>
                     <small class="text-light">
-                        © 2025 Money Savyy. All rights reserved. | Advanced Stock Analysis Platform
+                        © 2025 {{ app_name or "Money Savyy" }} v{{ app_version or "2.1.0" }}. All rights reserved. | Advanced Stock Analysis Platform
                     </small>
                 </div>
             </div>

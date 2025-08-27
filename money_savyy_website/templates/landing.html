@@ -7,7 +7,86 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Modern Navbar Override Styles - Must be after main CSS -->
     <style>
+        /* Override navbar styles with highest specificity */
+        body .navbar.navbar-expand-lg.fixed-top {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+            backdrop-filter: blur(20px) !important;
+            background: var(--navbar-bg) !important;
+            transition: all 0.3s ease !important;
+            padding: 1rem 0 !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        body .navbar .navbar-brand {
+            color: var(--text-primary) !important;
+            font-weight: 700 !important;
+            font-size: 1.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            transition: all 0.3s ease !important;
+        }
+
+        body .navbar .navbar-brand:hover {
+            color: #667eea !important;
+            transform: translateY(-1px) !important;
+        }
+
+        body .navbar .navbar-brand i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            font-size: 1.3rem !important;
+        }
+
+        body .navbar .navbar-nav .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500 !important;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 12px !important;
+            margin: 0 0.25rem !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        body .navbar .navbar-nav .nav-link:hover {
+            color: #667eea !important;
+            background: rgba(102, 126, 234, 0.1) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        body .navbar .navbar-nav .nav-link.active {
+            color: white !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+        }
+
+        body .navbar .navbar-nav .nav-link.active:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+        }
+
+        body .navbar .navbar-nav .nav-link i {
+            margin-right: 0.5rem !important;
+            font-size: 0.9rem !important;
+        }
+
+        body .navbar .navbar-toggler {
+            border: none !important;
+            padding: 0.5rem !important;
+            border-radius: 8px !important;
+            background: rgba(102, 126, 234, 0.1) !important;
+        }
+
+        body .navbar .navbar-toggler:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25) !important;
+        }
+
         .hero-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -132,9 +211,290 @@
             color: #6c757d;
             font-weight: 500;
         }
+
+        /* Timeline Styles for What's New Section */
+        .timeline {
+            position: relative;
+            padding-left: 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 60px;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .timeline-content h6 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .timeline-content p {
+            font-size: 0.9rem;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+
+        .feature-highlights {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-highlights .col-md-3:not(:last-child) {
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .whats-new-section .feature-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            position: relative;
+            color: var(--text-primary);
+        }
+
+        .whats-new-section .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .whats-new-section .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15) !important;
+        }
+
+        .whats-new-section .card-header {
+            border-bottom: none;
+            border-radius: 20px 20px 0 0 !important;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .whats-new-section .card-header.bg-primary {
+            background: linear-gradient(135deg, #007bff 0%, #6610f2 100%) !important;
+        }
+
+        .whats-new-section .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: cardShine 2s infinite;
+        }
+
+        @keyframes cardShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .whats-new-section .timeline-icon {
+            position: relative;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .whats-new-section .timeline-icon:hover {
+            transform: rotate(360deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+        }
+
+        .whats-new-section .badge {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .whats-new-section .bg-warning .timeline-icon {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .whats-new-section .bg-info .timeline-icon {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .whats-new-section .bg-secondary .timeline-icon {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .feature-highlights {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-highlights::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .feature-highlights .col-md-3 {
+            position: relative;
+            z-index: 2;
+        }
+
+        .whats-new-header {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .whats-new-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            animation: headerShine 3s infinite;
+        }
+
+        @keyframes headerShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+            40%, 43% { transform: translateY(-10px); }
+            70% { transform: translateY(-5px); }
+            90% { transform: translateY(-3px); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feature-highlights .col-md-3:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 60%;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent);
+        }
+
+        .feature-highlights .col-md-3:last-child::after {
+            display: none;
+        }
+
+        @keyframes buttonShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-chart-line me-2"></i>
+                {{ app_name or "Money Savyy" }}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">
+                            <i class="fas fa-home"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#whats-new">
+                            <i class="fas fa-rocket"></i>What's New
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/stock-analysis">
+                            <i class="fas fa-chart-bar"></i>Stock Analysis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/financial-advisor">
+                            <i class="fas fa-user-tie"></i>Financial Advisor
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">
+                            <i class="fas fa-info-circle"></i>About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <!-- Theme Toggle Button -->
     <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
         <i class="fas fa-moon" id="themeIcon"></i>
@@ -151,8 +511,8 @@
         <div class="container hero-content">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="hero-title">Money Savyy</h1>
-                    <p class="hero-subtitle">Save Smart, Dream Big</p>
+                    <h1 class="hero-title">{{ app_name or "Money Savyy" }}</h1>
+                    <p class="hero-subtitle">{{ app_tagline or "Save Smart, Dream Big" }}</p>
                     <p class="text-white fs-5 mb-4">
                         Your comprehensive financial companion for stock analysis and personal financial planning.
                         Take control of your finances and build wealth intelligently.
@@ -196,7 +556,7 @@
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="feature-card">
                                 <div class="feature-icon">
                                     <i class="fas fa-shield-alt"></i>
@@ -218,15 +578,263 @@
                                     Smart SIP recommendations and portfolio optimization for long-term wealth.
                                 </p>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- What's New & Roadmap Section -->
+    <section class="whats-new-section py-5" id="whats-new" style="background: var(--bg-secondary); position: relative; overflow: hidden;">
+        <!-- Animated Background Elements -->
+        <div style="position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; background: radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%); animation: float 6s ease-in-out infinite alternate;"></div>
+        
+        <div class="container" style="position: relative; z-index: 2;">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <div class="whats-new-header">
+                        <h2 class="display-5 fw-bold mb-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            <i class="fas fa-rocket me-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: bounce 2s infinite;"></i>
+                            What's New & Coming Soon
+                        </h2>
+                        <p class="lead text-muted mb-4">Stay updated with our latest features and upcoming enhancements</p>
+                        <div style="width: 100px; height: 4px; background: linear-gradient(90deg, #667eea, #764ba2); margin: 0 auto; border-radius: 2px; animation: pulse 2s infinite;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Latest Release Section -->
+                <div class="col-lg-6">
+                    <div class="feature-card h-100 border-0 shadow-lg" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-header bg-success text-white text-center position-relative">
+                            <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-star" style="font-size: 0.8rem; color: #FFD700;"></i>
+                            </div>
+                            <h4 class="mb-0 position-relative z-index-2">
+                                <i class="fas fa-check-circle me-2" style="animation: bounce 2s infinite;"></i>
+                                Latest Release v{{ app_version or "2.1.0" }}
+                            </h4>
+                            <small class="opacity-75">Released: {{ release_date or "August 2025" }}</small>
+                            <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #28a745;"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                {% if latest_features %}
+                                    {% for feature in latest_features %}
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-success">
+                                            <i class="{{ feature.icon }} text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-success">{{ feature.title }}</h6>
+                                            <p class="mb-2">{{ feature.description }}</p>
+                                            <span class="badge bg-success-subtle text-success">✓ Live</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-success">
+                                            <i class="fas fa-chart-line text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-success">Enhanced Technical Analysis</h6>
+                                            <p class="mb-2">Advanced RSI, MACD, and Bollinger Bands with interactive charts</p>
+                                            <span class="badge bg-success-subtle text-success">✓ Live</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-success">
+                                            <i class="fas fa-robot text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-success">AI-Powered Predictions</h6>
+                                            <p class="mb-2">Gemini AI integration for intelligent stock recommendations</p>
+                                            <span class="badge bg-success-subtle text-success">✓ Live</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-success">
+                                            <i class="fas fa-newspaper text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-success">Real-time News & Sentiment</h6>
+                                            <p class="mb-2">Live news feed with sentiment analysis and market impact scoring</p>
+                                            <span class="badge bg-success-subtle text-success">✓ Live</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-success">
+                                            <i class="fas fa-mobile-alt text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-success">Responsive Design</h6>
+                                            <p class="mb-2">Fully responsive interface with dark/light theme toggle</p>
+                                            <span class="badge bg-success-subtle text-success">✓ Live</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- In Progress Section -->
+                <div class="col-lg-6">
+                    <div class="feature-card h-100 border-0 shadow-lg" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-header bg-primary text-white text-center position-relative">
+                            <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-rocket" style="font-size: 0.8rem; color: #FFD700; animation: bounce 1.5s infinite;"></i>
+                            </div>
+                            <h4 class="mb-0 position-relative z-index-2">
+                                <i class="fas fa-cogs me-2" style="animation: spin 2s linear infinite;"></i>
+                                In Development v2.2.0
+                            </h4>
+                            <small class="opacity-75">Expected: September 2025</small>
+                            <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #007bff;"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                {% if upcoming_features %}
+                                    {% for feature in upcoming_features %}
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon 
+                                            {% if feature.status == 'in_progress' %}bg-warning
+                                            {% elif feature.status == 'planned' %}bg-info
+                                            {% else %}bg-secondary{% endif %}">
+                                            <i class="{{ feature.icon }} text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold 
+                                                {% if feature.status == 'in_progress' %}text-warning
+                                                {% elif feature.status == 'planned' %}text-info
+                                                {% else %}text-secondary{% endif %}">{{ feature.title }}</h6>
+                                            <p class="mb-2">{{ feature.description }}</p>
+                                            <span class="badge 
+                                                {% if feature.status == 'in_progress' %}bg-warning-subtle text-warning">🚧 In Progress
+                                                {% elif feature.status == 'planned' %}bg-info-subtle text-info">📋 Planned
+                                                {% else %}bg-secondary-subtle text-secondary">🔬 Research{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-warning">
+                                            <i class="fas fa-chart-pie text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-warning">Portfolio Management</h6>
+                                            <p class="mb-2">Track multiple stocks, portfolio performance, and risk metrics</p>
+                                            <span class="badge bg-warning-subtle text-warning">🚧 In Progress</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-info">
+                                            <i class="fas fa-bell text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-info">Smart Alerts</h6>
+                                            <p class="mb-2">Custom price alerts, technical pattern notifications, and market updates</p>
+                                            <span class="badge bg-info-subtle text-info">📋 Planned</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-info">
+                                            <i class="fas fa-users text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-info">Social Trading</h6>
+                                            <p class="mb-2">Follow expert traders, share analysis, and community insights</p>
+                                            <span class="badge bg-info-subtle text-info">📋 Planned</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon bg-secondary">
+                                            <i class="fas fa-brain text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="fw-bold text-secondary">Advanced ML Models</h6>
+                                            <p class="mb-2">LSTM neural networks for enhanced price prediction accuracy</p>
+                                            <span class="badge bg-secondary-subtle text-secondary">🔬 Research</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature Highlights -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="feature-highlights p-5 rounded-3 position-relative">
+                        <div class="row text-center text-white position-relative" style="z-index: 2;">
+                            <div class="col-md-3 mb-4 mb-md-0">
+                                <div style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-chart-line fa-3x mb-3" style="animation: float 3s ease-in-out infinite; animation-delay: 0s;"></i>
+                                    <h5 class="fw-bold">50+ Technical Indicators</h5>
+                                    <p class="mb-0 opacity-85">RSI, MACD, Bollinger Bands & more</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 mb-md-0">
+                                <div style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-robot fa-3x mb-3" style="animation: float 3s ease-in-out infinite; animation-delay: 0.5s;"></i>
+                                    <h5 class="fw-bold">AI-Powered Analysis</h5>
+                                    <p class="mb-0 opacity-85">Gemini AI for smart recommendations</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4 mb-md-0">
+                                <div style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-clock fa-3x mb-3" style="animation: float 3s ease-in-out infinite; animation-delay: 1s;"></i>
+                                    <h5 class="fw-bold">Real-time Data</h5>
+                                    <p class="mb-0 opacity-85">Live market data & news updates</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div style="transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-shield-alt fa-3x mb-3" style="animation: float 3s ease-in-out infinite; animation-delay: 1.5s;"></i>
+                                    <h5 class="fw-bold">Secure & Reliable</h5>
+                                    <p class="mb-0 opacity-85">Enterprise-grade security</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <div style="position: relative; display: inline-block;">
+                        <a href="/stock-analysis" class="btn btn-lg px-5 py-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; border-radius: 50px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); position: relative; overflow: hidden;" 
+                           onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(102, 126, 234, 0.4)'" 
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'">
+                            <i class="fas fa-rocket me-2"></i>
+                            Try Stock Analysis Now
+                            <span style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: buttonShine 2s infinite;"></span>
+                        </a>
+                    </div>
+                    <p class="mt-3 text-muted">
+                        <i class="fas fa-users me-1"></i>
+                        Join <strong>10,000+</strong> users making smarter investment decisions
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Stats Section -->
-    <section class="stats-section">
+    <!-- <section class="stats-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
@@ -255,7 +863,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <!-- Features Section -->
     <section class="py-5">
@@ -306,11 +914,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5>Money Savyy</h5>
-                    <p class="mb-0">Save Smart, Dream Big</p>
+                    <h5>{{ app_name or "Money Savyy" }}</h5>
+                    <p class="mb-0">{{ app_tagline or "Save Smart, Dream Big" }}</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p class="mb-0">&copy; 2025 Money Savyy. All rights reserved.</p>
+                    <p class="mb-0">&copy; 2025 {{ app_name or "Money Savyy" }} v{{ app_version or "2.1.0" }}. All rights reserved.</p>
                 </div>
             </div>
         </div>

@@ -183,7 +183,7 @@ class MoneySavyy {
                 return;
             }
 
-            this.currentStock = data;
+            this.currentStock = data.symbol || stockQuery;
             this.displayAnalysis(data);
             this.hideLoading();
 
@@ -194,6 +194,10 @@ class MoneySavyy {
     }
 
     displayAnalysis(data) {
+        // Debug logging to help track data structure issues
+        console.log('📊 Analysis data received:', data);
+        console.log('🎯 Recommendation structure:', data.recommendation);
+        
         // Update stock header with logo
         const stockLogo = document.getElementById('stockLogo');
         const stockName = document.getElementById('stockName');
@@ -218,19 +222,21 @@ class MoneySavyy {
         this.updatePriceInfo(data.current_info);
 
         // Update recommendation
+        console.log('🎯 Recommendation data type:', typeof data.recommendation);
+        console.log('🎯 Recommendation content:', data.recommendation);
         this.updateRecommendation(data.recommendation);
 
         // Update chart
         this.updateChart(data.chart);
 
-        // Update prediction tab
-        this.updatePrediction(data.prediction);
+        // Update news tab with AI sentiment
+        this.updateNews(data.news, data.news_sentiment);
 
-        // Update news tab
-        this.updateNews(data.news);
+        // Update fundamentals tab with AI analysis
+        this.updateFundamentals(data.fundamentals, data.fundamentals_analysis);
 
-        // Update fundamentals tab
-        this.updateFundamentals(data.fundamentals);
+        // Update Gemini AI insights tab
+        this.updateGeminiInsights(data.gemini_analysis);
 
         // Show results
         document.getElementById('analysisResults').classList.remove('d-none');
@@ -250,21 +256,85 @@ class MoneySavyy {
         
         changeEl.textContent = `${change >= 0 ? '+' : ''}₹${change.toFixed(2)} (${change >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`;
         changeEl.className = `mb-1 ${change >= 0 ? 'text-success' : 'text-danger'}`;
+        
+        // Show real price indicator if available
+        const priceIndicator = document.getElementById('priceIndicator');
+        if (info.is_real_price) {
+            priceIndicator.innerHTML = `
+                <span class="badge bg-success text-white">
+                    <i class="fas fa-wifi"></i> Live Price
+                </span>
+            `;
+            priceIndicator.style.display = 'block';
+        } else {
+            priceIndicator.innerHTML = `
+                <span class="badge bg-warning text-dark">
+                    <i class="fas fa-calculator"></i> Estimated
+                </span>
+            `;
+            priceIndicator.style.display = 'block';
+        }
     }
 
     updateRecommendation(rec) {
         const recDiv = document.getElementById('recommendation');
-        const badgeClass = `badge bg-${rec.color}`;
+        
+        console.log('🔍 updateRecommendation called with:', rec);
+        console.log('🔍 Type of rec:', typeof rec);
+        
+        // Handle both old format (direct string) and new format (object)
+        let recommendationText, color, confidence, score;
+        
+        if (typeof rec === 'object' && rec !== null) {
+            if (rec.recommendation) {
+                // New format with nested structure
+                recommendationText = rec.recommendation;
+                color = rec.color || 'secondary';
+                confidence = rec.confidence || 'Medium';
+                score = rec.score || 0;
+            } else if (rec.text || rec.value) {
+                // Alternative object formats
+                recommendationText = rec.text || rec.value || 'Hold';
+                color = rec.color || 'warning';
+                confidence = rec.confidence || 'Medium';
+                score = rec.score || 5.0;
+            } else {
+                // Object without expected properties - convert to string
+                console.warn('⚠️ Unexpected recommendation object structure:', rec);
+                recommendationText = JSON.stringify(rec);
+                color = 'warning';
+                confidence = 'Low';
+                score = 0;
+            }
+        } else if (typeof rec === 'string') {
+            // Old format (direct string)
+            recommendationText = rec;
+            color = rec.includes('Buy') || rec.includes('BUY') ? 'success' : 
+                   rec.includes('Sell') || rec.includes('SELL') ? 'danger' : 'warning';
+            confidence = 'Medium';
+            score = 7.0;
+        } else {
+            // Fallback for undefined/null/other types
+            console.warn('⚠️ Invalid recommendation data:', rec);
+            recommendationText = 'Hold';
+            color = 'warning';
+            confidence = 'Low';
+            score = 5.0;
+        }
+        
+        const badgeClass = `badge bg-${color}`;
         
         recDiv.innerHTML = `
             <span class="${badgeClass}">
                 <i class="fas fa-chart-line me-1"></i>
-                ${rec.recommendation}
+                ${recommendationText}
             </span>
             <small class="d-block mt-1 text-muted">
-                Confidence: ${rec.confidence} | Score: ${rec.score.toFixed(1)}
+                Confidence: ${confidence} | Score: ${typeof score === 'number' ? score.toFixed(1) : score}
             </small>
         `;
+        
+        console.log('✅ Recommendation updated with text:', recommendationText);
     }
 
     updateChart(chartJson) {
@@ -277,132 +347,760 @@ class MoneySavyy {
         }
     }
 
-    updatePrediction(prediction) {
-        const container = document.getElementById('predictionContent');
+    updateNews(newsData, sentimentAnalysis) {
+        const container = document.getElementById('newsContent');
         
-        if (prediction.error) {
+        if (!sentimentAnalysis) {
             container.innerHTML = `
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    ${prediction.error}
+                    News sentiment analysis temporarily unavailable.
                 </div>
             `;
             return;
         }
 
-        const trendColor = prediction.predicted_change_percent >= 0 ? 'success' : 'danger';
-        const trendIcon = prediction.predicted_change_percent >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+        const getSentimentColor = (label) => {
+            switch(label) {
+                case 'VERY_BULLISH': return 'success';
+                case 'BULLISH': return 'success';
+                case 'NEUTRAL': return 'warning';
+                case 'BEARISH': return 'danger';
+                case 'VERY_BEARISH': return 'danger';
+                default: return 'secondary';
+            }
+        };
 
-        container.innerHTML = `
-            <div class="prediction-card">
-                <div class="row text-center">
-                    <div class="col-md-3">
-                        <div class="prediction-metric">
-                            <h4>${prediction.model_used}</h4>
-                            <p class="mb-0">Model Used</p>
+        const getSentimentIcon = (label) => {
+            switch(label) {
+                case 'VERY_BULLISH': return 'fa-arrow-up';
+                case 'BULLISH': return 'fa-thumbs-up';
+                case 'NEUTRAL': return 'fa-minus';
+                case 'BEARISH': return 'fa-thumbs-down';
+                case 'VERY_BEARISH': return 'fa-arrow-down';
+                default: return 'fa-question';
+            }
+        };
+
+        // Enhanced news data with real links and information
+        const stockSymbol = (typeof this.currentStock === 'string' ? this.currentStock : 'RELIANCE.NS') || 'RELIANCE.NS';
+        const companyName = sentimentAnalysis.company_name || 'Reliance Industries';
+        
+        // Ensure stockSymbol is a valid string before using replace
+        const safeStockSymbol = String(stockSymbol).includes('.NS') ? stockSymbol : stockSymbol + '.NS';
+        
+        const newsHtml = `
+            <div class="row g-4">
+                <!-- Sentiment Overview -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-chart-line text-primary me-2"></i>Market Sentiment Overview</h5>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="prediction-metric">
-                            <h4>${(prediction.accuracy * 100).toFixed(1)}%</h4>
-                            <p class="mb-0">Accuracy</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="prediction-metric">
-                            <h4>₹${prediction.predicted_30d_avg.toFixed(2)}</h4>
-                            <p class="mb-0">30-Day Avg Prediction</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="prediction-metric">
-                            <h4 class="text-${trendColor}">
-                                <i class="fas ${trendIcon} me-1"></i>
-                                ${prediction.predicted_change_percent >= 0 ? '+' : ''}${prediction.predicted_change_percent.toFixed(1)}%
-                            </h4>
-                            <p class="mb-0">Expected Change</p>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center">
+                                    <div class="sentiment-score-circle mb-3" title="Sentiment Score: ${sentimentAnalysis.sentiment_score}/100 (Negative=Bearish, Positive=Bullish)">
+                                        <span class="sentiment-score text-${getSentimentColor(sentimentAnalysis.sentiment_label)}">
+                                            ${sentimentAnalysis.sentiment_score > 0 ? '+' : ''}${sentimentAnalysis.sentiment_score}
+                                        </span>
+                                    </div>
+                                    <small class="text-muted d-block mb-2">Score: -100 (Very Bearish) to +100 (Very Bullish)</small>
+                                    <span class="badge bg-${getSentimentColor(sentimentAnalysis.sentiment_label)} fs-6 px-3 py-2">
+                                        <i class="fas ${getSentimentIcon(sentimentAnalysis.sentiment_label)} me-2"></i>
+                                        ${sentimentAnalysis.sentiment_label}
+                                    </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <h6>Key Factors:</h6>
+                                    <ul class="list-unstyled">
+                                        ${sentimentAnalysis.key_factors.map(factor => `
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>${factor}</li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="mt-3">
-                <h6><i class="fas fa-lightbulb text-warning me-2"></i>AI Insights:</h6>
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-check text-success me-2"></i>Model trained on ${prediction.model_used.toLowerCase()} regression</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Analysis based on price history, volume, and volatility</li>
-                    <li><i class="fas fa-check text-success me-2"></i>Prediction confidence: ${(prediction.accuracy * 100).toFixed(1)}%</li>
-                </ul>
+
+                <!-- Real News & Information Sources -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-newspaper text-primary me-2"></i>Latest News & Information Sources</h5>
+                            <small class="text-muted">Real-time information</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <!-- News Sources -->
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-globe text-info me-2"></i>Financial News</h6>
+                                    <div class="list-group list-group-flush">
+                                        <a href="https://www.moneycontrol.com/stocks/company_info/stock_news.php?sc_id=${safeStockSymbol.replace('.NS', '')}" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-chart-line text-primary me-2"></i>MoneyControl News</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                        <a href="https://economictimes.indiatimes.com/markets/stocks/news" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-newspaper text-info me-2"></i>Economic Times</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                        <a href="https://www.livemint.com/market" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-coins text-success me-2"></i>LiveMint Markets</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                        <a href="https://www.business-standard.com/markets" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-building text-secondary me-2"></i>Business Standard</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Company Information -->
+                                <div class="col-md-6">
+                                    <h6><i class="fas fa-building text-success me-2"></i>Company Information</h6>
+                                    <div class="list-group list-group-flush">
+                                        <a href="https://www.screener.in/company/${safeStockSymbol.replace('.NS', '')}/" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-search text-primary me-2"></i>Screener Analysis</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                        <a href="https://www.tickertape.in/stocks/${safeStockSymbol.replace('.NS', '').toLowerCase()}" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-tape text-warning me-2"></i>TickerTape Profile</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                        <a href="https://www.nseindia.com/get-quotes/equity?symbol=${safeStockSymbol.replace('.NS', '')}" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-chart-bar text-info me-2"></i>NSE Official</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                        <a href="https://www.bseindia.com/stock-share-price/${safeStockSymbol.replace('.NS', '')}/financials/" 
+                                           target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            <span><i class="fas fa-calculator text-success me-2"></i>BSE Financials</span>
+                                            <i class="fas fa-external-link-alt text-muted"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dividend & Corporate Actions -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-coins text-warning me-2"></i>Dividend & Corporate Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Dividend Information:</strong>
+                                <div class="mt-2">
+                                    <a href="https://www.moneycontrol.com/stocks/company_info/dividends.php?sc_id=${safeStockSymbol.replace('.NS', '')}" 
+                                       target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-percentage me-1"></i>Dividend History
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Corporate Actions:</strong>
+                                <div class="mt-2">
+                                    <a href="https://www.nseindia.com/companies-listing/corporate-disclosure/disclosures" 
+                                       target="_blank" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-file-alt me-1"></i>NSE Disclosures
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-0">
+                                <strong>Annual Reports:</strong>
+                                <div class="mt-2">
+                                    <a href="https://www.screener.in/company/${safeStockSymbol.replace('.NS', '')}/consolidated/" 
+                                       target="_blank" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-file-pdf me-1"></i>Financial Reports
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Outlook -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-calendar-alt text-info me-2"></i>Market Outlook</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Short Term (1-3 months):</strong>
+                                <p class="text-muted mb-1">${sentimentAnalysis.market_outlook.short_term}</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Medium Term (6-12 months):</strong>
+                                <p class="text-muted mb-1">${sentimentAnalysis.market_outlook.medium_term}</p>
+                            </div>
+                            <div class="mb-0">
+                                <strong>Long Term (2-5 years):</strong>
+                                <p class="text-muted mb-0">${sentimentAnalysis.market_outlook.long_term}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyst Research & Reports -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-users text-primary me-2"></i>Analyst Research & Reports</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <h6>Research Reports:</h6>
+                                    <div class="d-grid gap-2">
+                                        <a href="https://www.icicidirect.com/idirectcontent/Markets/CompanyResearch.aspx" 
+                                           target="_blank" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-chart-area me-1"></i>ICICI Direct Research
+                                        </a>
+                                        <a href="https://www.hdfcsec.com/hsl.research.homepage" 
+                                           target="_blank" class="btn btn-outline-info btn-sm">
+                                            <i class="fas fa-file-chart me-1"></i>HDFC Securities
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Price Targets:</h6>
+                                    <div class="d-grid gap-2">
+                                        <a href="https://www.tickertape.in/stocks/${safeStockSymbol.replace('.NS', '').toLowerCase()}/price-targets" 
+                                           target="_blank" class="btn btn-outline-warning btn-sm">
+                                            <i class="fas fa-bullseye me-1"></i>Analyst Targets
+                                        </a>
+                                        <a href="https://www.moneycontrol.com/stocks/company_info/stock_news.php?sc_id=${safeStockSymbol.replace('.NS', '')}" 
+                                           target="_blank" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-star me-1"></i>Ratings & Reviews
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Earnings & Results:</h6>
+                                    <div class="d-grid gap-2">
+                                        <a href="https://www.screener.in/company/${safeStockSymbol.replace('.NS', '')}/quarterly-results/" 
+                                           target="_blank" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-calendar me-1"></i>Quarterly Results
+                                        </a>
+                                        <a href="https://www.nseindia.com/companies-listing/corporate-disclosure/disclosures" 
+                                           target="_blank" class="btn btn-outline-dark btn-sm">
+                                            <i class="fas fa-microphone me-1"></i>Earnings Call
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk & Opportunities -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-balance-scale text-warning me-2"></i>Risk & Opportunities</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong class="text-danger">Risk Factors:</strong>
+                                <ul class="list-unstyled mt-2">
+                                    ${sentimentAnalysis.risk_factors.map(risk => `
+                                        <li class="mb-1"><i class="fas fa-exclamation-triangle text-danger me-2"></i>${risk}</li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            <div class="mb-0">
+                                <strong class="text-success">Opportunities:</strong>
+                                <ul class="list-unstyled mt-2">
+                                    ${sentimentAnalysis.opportunities.map(opp => `
+                                        <li class="mb-1"><i class="fas fa-star text-success me-2"></i>${opp}</li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peer Comparison -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-chart-line text-success me-2"></i>Peer Comparison & Sector</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Sector Analysis:</strong>
+                                <div class="mt-2">
+                                    <a href="https://www.screener.in/screens/71069/all-stocks/?sort=name&order=asc" 
+                                       target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-industry me-1"></i>Sector Comparison
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Peer Analysis:</strong>
+                                <div class="mt-2">
+                                    <a href="https://www.tickertape.in/stocks/${safeStockSymbol.replace('.NS', '').toLowerCase()}/peers" 
+                                       target="_blank" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-users me-1"></i>Peer Stocks
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="mb-0">
+                                <strong>Market Trends:</strong>
+                                <div class="mt-2">
+                                    <a href="https://www.nseindia.com/market-data/securities-available-for-trading" 
+                                       target="_blank" class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-trending-up me-1"></i>Market Trends
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Summary & Consensus -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-newspaper text-primary me-2"></i>News Summary & Analyst Consensus</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6>News Impact Summary:</h6>
+                                    <p class="text-muted">${sentimentAnalysis.news_summary}</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <h6>Analyst Consensus:</h6>
+                                    <span class="badge bg-${getSentimentColor(sentimentAnalysis.analyst_consensus)} fs-5 px-4 py-3">
+                                        ${sentimentAnalysis.analyst_consensus}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Source & Disclaimer -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <small class="text-muted">
+                                        <i class="fas fa-robot me-1"></i>
+                                        Analysis powered by Google Gemini AI • 
+                                        Source: ${sentimentAnalysis.source} • 
+                                        Updated: ${sentimentAnalysis.timestamp}
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <small class="text-warning">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        <strong>Disclaimer:</strong> For informational purposes only. Not investment advice.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        </small>
+                    </div>
+                </div>
             </div>
         `;
-    }
-
-    updateNews(newsData) {
-        const container = document.getElementById('newsContent');
-        
-        if (!newsData || newsData.length === 0) {
-            container.innerHTML = '<p class="text-muted">No recent news available.</p>';
-            return;
-        }
-
-        const newsHtml = newsData.map(news => {
-            const sentimentClass = news.sentiment.toLowerCase();
-            const sentimentColor = sentimentClass === 'positive' ? 'success' : sentimentClass === 'negative' ? 'danger' : 'warning';
-            const sentimentIcon = sentimentClass === 'positive' ? 'fa-smile' : sentimentClass === 'negative' ? 'fa-frown' : 'fa-meh';
-
-            return `
-                <div class="news-item sentiment-${sentimentClass}">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="mb-0">${news.title}</h6>
-                        <span class="sentiment-badge badge bg-${sentimentColor}">
-                            <i class="fas ${sentimentIcon} me-1"></i>
-                            ${news.sentiment}
-                        </span>
-                    </div>
-                    <p class="text-muted mb-2">${news.summary}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="fas fa-clock me-1"></i>
-                            ${news.published} | ${news.source}
-                        </small>
-                        ${news.link !== '#' && news.link !== 'N/A' ? 
-                            `<a href="${news.link}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-external-link-alt me-1"></i>Read More
-                            </a>` : ''
-                        }
-                    </div>
-                </div>
-            `;
-        }).join('');
 
         container.innerHTML = newsHtml;
     }
 
-    updateFundamentals(fundamentals) {
+    updateFundamentals(fundamentals, fundamentalsAnalysis) {
         const container = document.getElementById('fundamentalsContent');
         
-        const fundamentalItems = [
-            { label: 'Market Cap', value: this.formatLargeNumber(fundamentals.market_cap), icon: 'fa-building' },
-            { label: 'P/E Ratio', value: fundamentals.pe_ratio ? fundamentals.pe_ratio.toFixed(2) : 'N/A', icon: 'fa-calculator' },
-            { label: 'Dividend Yield', value: fundamentals.dividend_yield ? (fundamentals.dividend_yield * 100).toFixed(2) + '%' : 'N/A', icon: 'fa-percent' },
-            { label: '52W High', value: fundamentals.week_52_high ? `₹${fundamentals.week_52_high.toFixed(2)}` : 'N/A', icon: 'fa-arrow-up' },
-            { label: '52W Low', value: fundamentals.week_52_low ? `₹${fundamentals.week_52_low.toFixed(2)}` : 'N/A', icon: 'fa-arrow-down' },
-            { label: 'Sector', value: fundamentals.sector || 'N/A', icon: 'fa-industry' },
-            { label: 'Industry', value: fundamentals.industry || 'N/A', icon: 'fa-cogs' }
-        ];
+        if (!fundamentalsAnalysis) {
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Fundamental analysis temporarily unavailable.
+                </div>
+            `;
+            return;
+        }
+
+        const getGradeColor = (grade) => {
+            switch(grade) {
+                case 'A+': case 'A': return 'success';
+                case 'B': return 'primary';
+                case 'C': return 'warning';
+                case 'D': return 'danger';
+                default: return 'secondary';
+            }
+        };
+
+        const getRatingColor = (rating) => {
+            switch(rating) {
+                case 'STRONG_BUY': return 'success';
+                case 'BUY': return 'success';
+                case 'HOLD': return 'warning';
+                case 'SELL': return 'danger';
+                case 'STRONG_SELL': return 'danger';
+                default: return 'secondary';
+            }
+        };
 
         const fundamentalsHtml = `
-            <div class="fundamentals-grid">
-                ${fundamentalItems.map(item => `
-                    <div class="fundamental-item">
-                        <i class="fas ${item.icon} text-primary mb-2"></i>
-                        <h5>${item.value}</h5>
-                        <p class="mb-0 text-muted">${item.label}</p>
+            <div class="row g-4">
+                <!-- Valuation Assessment -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-chart-pie text-primary me-2"></i>Valuation Assessment</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center">
+                                    <h3 class="text-primary">₹${fundamentalsAnalysis.valuation_assessment.intrinsic_value_estimate || 'N/A'}</h3>
+                                    <p class="text-muted mb-0">Estimated Fair Value</p>
+                                    <span class="badge bg-${fundamentalsAnalysis.valuation_assessment.valuation_rating === 'UNDERVALUED' ? 'success' : fundamentalsAnalysis.valuation_assessment.valuation_rating === 'OVERVALUED' ? 'danger' : 'warning'} mt-2">
+                                        ${fundamentalsAnalysis.valuation_assessment.valuation_rating}
+                                    </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <h6>Valuation Rationale:</h6>
+                                    <p class="text-muted">${fundamentalsAnalysis.valuation_assessment.valuation_rationale}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                `).join('')}
+                </div>
+
+                <!-- Financial Health Scorecard -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-heartbeat text-danger me-2"></i>Financial Health Score</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <div class="financial-score-circle">
+                                    <span class="score-number">${fundamentalsAnalysis.financial_health.overall_score}</span>
+                                    <span class="score-total">/10</span>
+                                </div>
+                            </div>
+                            <div class="grade-breakdown">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Profitability:</span>
+                                    <span class="badge bg-${getGradeColor(fundamentalsAnalysis.financial_health.profitability_grade)}">${fundamentalsAnalysis.financial_health.profitability_grade}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Liquidity:</span>
+                                    <span class="badge bg-${getGradeColor(fundamentalsAnalysis.financial_health.liquidity_grade)}">${fundamentalsAnalysis.financial_health.liquidity_grade}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Leverage:</span>
+                                    <span class="badge bg-${getGradeColor(fundamentalsAnalysis.financial_health.leverage_grade)}">${fundamentalsAnalysis.financial_health.leverage_grade}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Efficiency:</span>
+                                    <span class="badge bg-${getGradeColor(fundamentalsAnalysis.financial_health.efficiency_grade)}">${fundamentalsAnalysis.financial_health.efficiency_grade}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-calculator text-success me-2"></i>Key Financial Metrics</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="fundamental-metrics">
+                                <div class="metric-item d-flex justify-content-between mb-2">
+                                    <span>Market Cap:</span>
+                                    <strong>${this.formatLargeNumber(fundamentals.market_cap)}</strong>
+                                </div>
+                                <div class="metric-item d-flex justify-content-between mb-2">
+                                    <span>P/E Ratio:</span>
+                                    <strong>${fundamentals.pe_ratio ? fundamentals.pe_ratio.toFixed(2) : 'N/A'}</strong>
+                                </div>
+                                <div class="metric-item d-flex justify-content-between mb-2">
+                                    <span>Dividend Yield:</span>
+                                    <strong>${fundamentals.dividend_yield ? (fundamentals.dividend_yield * 100).toFixed(2) + '%' : 'N/A'}</strong>
+                                </div>
+                                <div class="metric-item d-flex justify-content-between mb-2">
+                                    <span>Sector:</span>
+                                    <strong>${fundamentals.sector || 'N/A'}</strong>
+                                </div>
+                                <div class="metric-item d-flex justify-content-between">
+                                    <span>Industry:</span>
+                                    <strong>${fundamentals.industry || 'N/A'}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strengths & Concerns -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-thumbs-up text-success me-2"></i>Key Strengths</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                ${fundamentalsAnalysis.key_strengths.map(strength => `
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>${strength}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-exclamation-triangle text-warning me-2"></i>Key Concerns</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                ${fundamentalsAnalysis.key_concerns.map(concern => `
+                                    <li class="mb-2"><i class="fas fa-times-circle text-warning me-2"></i>${concern}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Growth Prospects -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-chart-line text-info me-2"></i>Growth Prospects</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Revenue Growth Outlook:</h6>
+                                    <p class="text-muted">${fundamentalsAnalysis.growth_prospects.revenue_growth_outlook}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Profit Margin Trend:</h6>
+                                    <p class="text-muted">${fundamentalsAnalysis.growth_prospects.profit_margin_trend}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Market Expansion:</h6>
+                                    <p class="text-muted">${fundamentalsAnalysis.growth_prospects.market_expansion}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investment Recommendation -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6><i class="fas fa-bullseye text-primary me-2"></i>Investment Recommendation</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center">
+                                    <span class="badge bg-${getRatingColor(fundamentalsAnalysis.investment_recommendation.rating)} fs-4 px-4 py-3">
+                                        ${fundamentalsAnalysis.investment_recommendation.rating}
+                                    </span>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h5 class="text-primary mb-0">₹${fundamentalsAnalysis.investment_recommendation.target_price || 'N/A'}</h5>
+                                    <small class="text-muted">Target Price</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h6 class="mb-0">${fundamentalsAnalysis.investment_recommendation.investment_horizon}</h6>
+                                    <small class="text-muted">Investment Horizon</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6>Rationale:</h6>
+                                    <p class="text-muted mb-0">${fundamentalsAnalysis.investment_recommendation.rationale}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Source -->
+                <div class="col-12">
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-robot me-1"></i>
+                            Analysis powered by Google Gemini AI • 
+                            Source: ${fundamentalsAnalysis.source} • 
+                            Updated: ${fundamentalsAnalysis.timestamp}
+                        </small>
+                    </div>
+                </div>
             </div>
         `;
 
         container.innerHTML = fundamentalsHtml;
+    }
+
+    updateGeminiInsights(geminiAnalysis) {
+        const container = document.getElementById('geminiContent');
+        
+        if (!geminiAnalysis) {
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Gemini AI insights are temporarily unavailable.
+                </div>
+            `;
+            return;
+        }
+
+        const getRecommendationColor = (rec) => {
+            switch(rec) {
+                case 'BUY': return 'success';
+                case 'SELL': return 'danger';
+                case 'HOLD': return 'warning';
+                default: return 'secondary';
+            }
+        };
+
+        const getRiskLevelColor = (risk) => {
+            switch(risk) {
+                case 'LOW': return 'success';
+                case 'MEDIUM': return 'warning';
+                case 'HIGH': return 'danger';
+                default: return 'secondary';
+            }
+        };
+
+        const geminiHtml = `
+            <div class="row g-4">
+                <!-- Technical Summary -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h6><i class="fas fa-chart-line text-primary me-2"></i>Technical Analysis</h6>
+                            <p class="mb-0">${geminiAnalysis.technical_summary || 'Analysis not available'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendation and Risk -->
+                <div class="col-md-6">
+                    <div class="card border-0 h-100">
+                        <div class="card-body text-center">
+                            <h6><i class="fas fa-thumbs-up text-primary me-2"></i>AI Recommendation</h6>
+                            <div class="mb-3">
+                                <span class="badge bg-${getRecommendationColor(geminiAnalysis.recommendation)} fs-6 px-3 py-2">
+                                    ${geminiAnalysis.recommendation || 'HOLD'}
+                                </span>
+                            </div>
+                            <small class="text-muted">${geminiAnalysis.recommendation_reason || 'No specific reason provided'}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 h-100">
+                        <div class="card-body text-center">
+                            <h6><i class="fas fa-shield-alt text-primary me-2"></i>Risk Assessment</h6>
+                            <div class="mb-3">
+                                <span class="badge bg-${getRiskLevelColor(geminiAnalysis.risk_level)} fs-6 px-3 py-2">
+                                    ${geminiAnalysis.risk_level || 'MEDIUM'} RISK
+                                </span>
+                            </div>
+                            <small class="text-muted">${geminiAnalysis.risk_explanation || 'Standard market risk applies'}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Targets -->
+                ${geminiAnalysis.price_targets ? `
+                <div class="col-12">
+                    <div class="card border-0">
+                        <div class="card-body">
+                            <h6><i class="fas fa-target text-primary me-2"></i>Price Targets</h6>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="border-end pe-3">
+                                        <h5 class="text-danger">₹${geminiAnalysis.price_targets.support?.toFixed(2) || 'N/A'}</h5>
+                                        <small class="text-muted">Support</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="border-end pe-3">
+                                        <h5 class="text-success">₹${geminiAnalysis.price_targets.resistance?.toFixed(2) || 'N/A'}</h5>
+                                        <small class="text-muted">Resistance</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <h5 class="text-primary">₹${geminiAnalysis.price_targets.target_3m?.toFixed(2) || 'N/A'}</h5>
+                                    <small class="text-muted">3M Target</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Market Outlook -->
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h6><i class="fas fa-crystal-ball text-primary me-2"></i>Market Outlook</h6>
+                            <p class="mb-0">${geminiAnalysis.market_outlook || 'Market outlook analysis not available'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Factors -->
+                ${geminiAnalysis.key_factors && geminiAnalysis.key_factors.length > 0 ? `
+                <div class="col-12">
+                    <div class="card border-0">
+                        <div class="card-body">
+                            <h6><i class="fas fa-key text-primary me-2"></i>Key Factors</h6>
+                            <div class="row">
+                                ${geminiAnalysis.key_factors.map((factor, index) => `
+                                    <div class="col-md-6 mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-dot-circle text-primary me-2"></i>
+                                            <span>${factor}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- AI Source Badge -->
+                <div class="col-12">
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-robot me-1"></i>
+                            Generated by Google Gemini AI • 
+                            Source: ${geminiAnalysis.source || 'AI Analysis'}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = geminiHtml;
     }
 
     formatNumber(num) {

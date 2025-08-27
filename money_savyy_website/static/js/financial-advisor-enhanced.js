@@ -27,9 +27,7 @@ class ProfessionalFinancialAdvisor {
     handleTabSwitch(tabName) {
         switch(tabName) {
             case 'portfolio-analysis':
-                setTimeout(() => {
-                    this.renderPortfolioCharts();
-                }, 100);
+                this.renderPortfolioCharts();
                 break;
             case 'ai-insights':
                 this.loadAIInsights();
@@ -41,6 +39,7 @@ class ProfessionalFinancialAdvisor {
         if (this.validateCurrentStep()) {
             this.hideCurrentStep();
             this.showStep(step);
+            this.updateStepIndicator(step);
             this.currentStep = step;
         }
     }
@@ -48,6 +47,7 @@ class ProfessionalFinancialAdvisor {
     prevStep(step) {
         this.hideCurrentStep();
         this.showStep(step);
+        this.updateStepIndicator(step);
         this.currentStep = step;
     }
 
@@ -74,14 +74,23 @@ class ProfessionalFinancialAdvisor {
     }
 
     showStep(step) {
-        // Hide all sections
-        const sections = document.querySelectorAll('.form-section');
-        sections.forEach(section => section.classList.remove('active'));
-        
-        // Show target section
         const section = document.getElementById(`section-${step}`);
         if (section) {
             section.classList.add('active');
+        }
+    }
+
+    updateStepIndicator(step) {
+        for (let i = 1; i <= this.totalSteps; i++) {
+            const stepElement = document.getElementById(`step-${i}`);
+            if (stepElement) {
+                stepElement.classList.remove('active', 'completed');
+                if (i < step) {
+                    stepElement.classList.add('completed');
+                } else if (i === step) {
+                    stepElement.classList.add('active');
+                }
+            }
         }
     }
 
@@ -637,305 +646,6 @@ class ProfessionalFinancialAdvisor {
         if (score >= 80) return 'badge bg-success';
         if (score >= 60) return 'badge bg-warning';
         return 'badge bg-danger';
-    }
-
-    renderPortfolioCharts() {
-        if (!this.analysisData || !this.analysisData.gemini_advice) return;
-
-        const advice = this.analysisData.gemini_advice;
-        
-        // Render current allocation chart
-        this.renderAllocationChart(
-            'current-allocation-chart',
-            'Current Portfolio',
-            advice.detailed_portfolio_analysis?.current_asset_allocation || {
-                liquid_cash: 60,
-                equity_investments: 25,
-                debt_investments: 10,
-                real_estate: 0,
-                others: 5
-            },
-            'current-allocation-details'
-        );
-
-        // Render recommended allocation chart
-        this.renderAllocationChart(
-            'recommended-allocation-chart',
-            'Recommended Portfolio',
-            advice.detailed_portfolio_analysis?.recommended_allocation || {
-                equity_funds: 50,
-                debt_funds: 25,
-                emergency_fund: 15,
-                ppf_elss: 10,
-                international_funds: 0
-            },
-            'recommended-allocation-details'
-        );
-
-        // Render rebalancing strategy
-        this.renderRebalancingStrategy();
-    }
-
-    renderAllocationChart(canvasId, title, allocation, detailsId) {
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-
-        // Destroy existing chart if it exists
-        if (this.charts[canvasId]) {
-            this.charts[canvasId].destroy();
-        }
-
-        const ctx = canvas.getContext('2d');
-        const labels = Object.keys(allocation).map(key => this.formatLabel(key));
-        const data = Object.values(allocation);
-        const colors = [
-            '#667eea',
-            '#764ba2',
-            '#f093fb',
-            '#f5576c',
-            '#4facfe',
-            '#00f2fe',
-            '#43e97b',
-            '#38f9d7'
-        ];
-
-        this.charts[canvasId] = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colors.slice(0, data.length),
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            font: {
-                                size: 12
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.label + ': ' + context.parsed + '%';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Render allocation details
-        this.renderAllocationDetails(detailsId, allocation, colors);
-    }
-
-    renderAllocationDetails(detailsId, allocation, colors) {
-        const detailsContainer = document.getElementById(detailsId);
-        if (!detailsContainer) return;
-
-        let detailsHTML = '';
-        let colorIndex = 0;
-
-        Object.entries(allocation).forEach(([key, value]) => {
-            if (value > 0) {
-                detailsHTML += `
-                    <div class="allocation-item">
-                        <div class="d-flex align-items-center">
-                            <div style="width: 12px; height: 12px; background: ${colors[colorIndex]}; border-radius: 50%; margin-right: 8px;"></div>
-                            <span>${this.formatLabel(key)}</span>
-                        </div>
-                        <strong>${value}%</strong>
-                    </div>
-                `;
-                colorIndex++;
-            }
-        });
-
-        detailsContainer.innerHTML = detailsHTML;
-    }
-
-    renderRebalancingStrategy() {
-        const container = document.getElementById('rebalancing-strategy');
-        if (!container || !this.analysisData?.gemini_advice?.detailed_portfolio_analysis) return;
-
-        const strategy = this.analysisData.gemini_advice.detailed_portfolio_analysis.rebalancing_strategy ||
-            "Gradually shift from savings account to equity and debt mutual funds through systematic transfer plans";
-
-        container.innerHTML = `
-            <div class="investment-card">
-                <h6><i class="fas fa-lightbulb me-2"></i>Strategy Overview</h6>
-                <p class="mb-3">${strategy}</p>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="text-center">
-                            <div class="wealth-metric">
-                                <div class="metric-value">Step 1</div>
-                                <small>Build Emergency Fund</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center">
-                            <div class="wealth-metric">
-                                <div class="metric-value">Step 2</div>
-                                <small>Start SIP Investments</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center">
-                            <div class="wealth-metric">
-                                <div class="metric-value">Step 3</div>
-                                <small>Diversify Portfolio</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    formatLabel(key) {
-        return key.replace(/_/g, ' ')
-                 .replace(/\b\w/g, l => l.toUpperCase());
-    }
-
-    loadAIInsights() {
-        if (!this.analysisData?.gemini_advice) {
-            // If no analysis data yet, render the AI insights section with available data
-            this.renderBasicAIInsights();
-            return;
-        }
-
-        // Hide loading and show the AI insights
-        const loadingContent = document.getElementById('ai-analysis-content');
-        if (loadingContent) {
-            loadingContent.innerHTML = `
-                <div class="text-center mb-4">
-                    <h4><i class="fas fa-check-circle text-success me-2"></i>Analysis Complete</h4>
-                    <p class="text-white-50">Your comprehensive financial analysis is ready</p>
-                </div>
-            `;
-        }
-
-        // Render detailed AI insights
-        const container = document.getElementById('detailed-ai-insights');
-        if (!container) return;
-
-        const advice = this.analysisData.gemini_advice;
-        const formData = this.collectFormData();
-        const hasAllInsurance = formData.hasTermInsurance && formData.hasHealthInsurance;
-
-        let riskManagementHTML = '';
-        if (!hasAllInsurance && advice.risk_management) {
-            const riskMgmt = advice.risk_management;
-            riskManagementHTML = `
-                <div class="professional-card p-4 mb-4">
-                    <h5><i class="fas fa-shield-alt me-2"></i>Risk Management</h5>
-                    <div class="row">
-                        ${!formData.hasTermInsurance ? `
-                        <div class="col-md-4 mb-3">
-                            <div class="wealth-metric">
-                                <div class="metric-value">₹${this.formatNumber(riskMgmt.insurance_gap_analysis?.life_cover_needed || 1500000)}</div>
-                                <p class="mb-0">Life Cover Needed</p>
-                            </div>
-                        </div>` : ''}
-                        ${!formData.hasHealthInsurance ? `
-                        <div class="col-md-4 mb-3">
-                            <div class="wealth-metric">
-                                <div class="metric-value">₹${this.formatNumber(riskMgmt.insurance_gap_analysis?.health_cover_needed || 1000000)}</div>
-                                <p class="mb-0">Health Cover Needed</p>
-                            </div>
-                        </div>` : ''}
-                        <div class="col-md-4 mb-3">
-                            <div class="wealth-metric">
-                                <div class="metric-value">₹${this.formatNumber(riskMgmt.insurance_gap_analysis?.annual_premium_budget || 38000)}</div>
-                                <p class="mb-0">Annual Premium Budget</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        container.innerHTML = `
-            ${riskManagementHTML}
-            
-            <div class="professional-card p-4 mb-4">
-                <h5><i class="fas fa-chart-line me-2"></i>Tax Optimization</h5>
-                <div class="row">
-                    ${advice.tax_optimization?.tax_efficient_instruments?.map(instrument => `
-                        <div class="col-lg-6 mb-3">
-                            <div class="investment-card">
-                                <h6>${instrument.instrument}</h6>
-                                <div class="d-flex justify-content-between">
-                                    <span>Recommended Amount:</span>
-                                    <strong>₹${this.formatNumber(instrument.recommended_amount)}</strong>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Tax Benefit:</span>
-                                    <strong>${instrument.tax_benefit}</strong>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Expected Returns:</span>
-                                    <strong>${instrument.expected_returns}%</strong>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('') || ''}
-                </div>
-            </div>
-
-            <div class="professional-card p-4">
-                <h5><i class="fas fa-bullseye me-2"></i>Performance Benchmarks</h5>
-                <div class="row">
-                    ${advice.performance_benchmarks?.target_annual_returns ? `
-                    <div class="col-md-4 mb-3">
-                        <div class="wealth-metric">
-                            <div class="metric-value">${advice.performance_benchmarks.target_annual_returns.conservative_scenario}%</div>
-                            <p class="mb-0">Conservative Returns</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="wealth-metric">
-                            <div class="metric-value">${advice.performance_benchmarks.target_annual_returns.moderate_scenario}%</div>
-                            <p class="mb-0">Moderate Returns</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="wealth-metric">
-                            <div class="metric-value">${advice.performance_benchmarks.target_annual_returns.optimistic_scenario}%</div>
-                            <p class="mb-0">Optimistic Returns</p>
-                        </div>
-                    </div>` : ''}
-                </div>
-            </div>
-        `;
-    }
-
-    renderBasicAIInsights() {
-        const container = document.getElementById('detailed-ai-insights');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="professional-card p-4 mb-4">
-                <h5><i class="fas fa-info-circle me-2"></i>Analysis Status</h5>
-                <p>Complete the financial analysis first to see detailed AI-powered insights and recommendations.</p>
-                <button class="btn btn-primary" onclick="document.querySelector('[href=&quot;#executive-summary&quot;]').click()">
-                    <i class="fas fa-arrow-left me-2"></i>Go to Analysis
-                </button>
-            </div>
-        `;
     }
 
     getRiskClass(riskLevel) {
