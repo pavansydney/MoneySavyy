@@ -287,14 +287,22 @@ circle.yml
 local_config.py
 dev_settings.py
 
-# Chart and image exports
+# Chart and image exports (exclude auto-generated charts and exports)
 charts/
 exports/
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
+# Allow static images but block generated ones
+!static/images/*.png
+!static/images/*.jpg
+!static/images/*.jpeg
+!static/images/*.gif
+!static/images/*.svg
+# Block generated charts/exports
+charts/*.png
+charts/*.jpg
+charts/*.jpeg
+exports/*.png
+exports/*.jpg
+exports/*.jpeg
 *.pdf
 
 # Financial data exports
